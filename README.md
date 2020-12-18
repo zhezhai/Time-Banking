@@ -27,7 +27,7 @@ This is truffle folder to develop smart contract for TB service exchange impleme
 	--- 2_deploy_contracts.js: This file is the migration (deployment) script for deploying our developed smart contract Solidity files.
 	
 
-### src
+### server
 The prototype desgin of BIT by using python. 
 * SrvExchangeToken.py: This module provide encapsulation of web3.py API to interact with SrvExchange.sol smart contract.
 
@@ -42,3 +42,11 @@ The prototype desgin of BIT by using python.
 * services_list.json: This json file saves deployed micorservice nodes' IP address used in prototype.
 
 * utilities.py: This module provide basic utility functions to support project.
+
+### front-end
+The front-end to create the user interface, designed using react and web3.js
+* component: This folder contains the module required by the website.
+
+* pages: This folder contains the pages of the website.
+
+* App.js: using react-routing-dom to perform the routing between different pages.
