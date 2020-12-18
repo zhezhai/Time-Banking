@@ -1,0 +1,7 @@
+const accounts = [
+    '0x09e7562B6FCa39440cCe8DF46866dA0aA4A55140',
+    '0xFDD63CB4D8a520E864A4FeFEDaccC43f3b675216',
+    '0x52F3E6cAfe3FB5BbBd96731619AcB50FEDE49d18'
+]
+
+export default accounts
