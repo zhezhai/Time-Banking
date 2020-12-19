@@ -4,6 +4,7 @@ import Web3 from "web3";
 import abi from "../contracts/SrvExchange.json";
 import menu from "./data/data";
 import accounts from "./data/accounts";
+import Axios from "axios";
 
 const TBContext = React.createContext();
 const TBProvider = ({ children }) => {
@@ -12,6 +13,7 @@ const TBProvider = ({ children }) => {
   const [service, setService] = useState(menu);
   const [contract, setContract] = useState();
 
+  // search the specific service
   const searchTBService = (serviceName) => {
     if (serviceName) {
       const result = menu.filter(
@@ -26,6 +28,7 @@ const TBProvider = ({ children }) => {
     }
   };
 
+  // load browser web3
   const loadWeb3 = async () => {
     if (window.ethereum) {
       window.web3 = new Web3(window.ethereum);
@@ -49,8 +52,6 @@ const TBProvider = ({ children }) => {
     const web3 = window.web3;
     const accounts = await web3.eth.getAccounts();
     const account = accounts[0];
-    console.log(account);
-    console.log(web3.eth.coinbase);
     setCurrentAccount(account);
 
     const networkId = await web3.eth.net.getId();
@@ -59,12 +60,19 @@ const TBProvider = ({ children }) => {
     setContract(newContract);
   };
 
-  // const getAccount = async () => {
-  //   const web3 = window.web3;
-  //   const networkId = await web3.eth.net.getId();
-  //   const address = abi.networks[networkId].address;
-  //   const newContract = new web3.eth.Contract(abi.abi, address);
-    
+  // const initAccount = async (address) => {
+  //   contract.methods.initAccount(address).send({ from: currentAccount });
+  // };
+
+  // const getAccount = async (address) => {
+  //   const response = await contract.methods.getAccount(address).call();
+  //   console.log(response)
+  // };
+
+  // const setAccount = (address, status, balance) => {
+  //   contract.methods
+  //     .setAccount(address, status, balance)
+  //     .send({ from: currentAccount });
   // };
 
   return (
@@ -77,7 +85,7 @@ const TBProvider = ({ children }) => {
         searchTBService,
         currentAccount,
         setCurrentAccount,
-        contract
+        contract,
         // getAccount,
       }}
     >

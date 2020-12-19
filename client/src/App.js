@@ -7,12 +7,11 @@ import {
   PostService,
   GetService,
   Payment,
-  Test
+  Test,
 } from "./pages";
 import { TBContext } from "./context/context";
 import GlobalStyle from "./GlobalStyle";
-import Web3 from "web3";
-import Axios from "axios";
+
 const App = () => {
   const {
     loadWeb3,
@@ -20,24 +19,15 @@ const App = () => {
     currentAccount,
     setCurrentAccount,
     contract,
+    initAccount,
+    setAccount,
+    getAccount,
   } = React.useContext(TBContext);
 
   useEffect(() => {
     loadWeb3();
     initContract();
-  }, []);
-
-  const initAccount = async (address) => {
-    contract.methods.initAccount(address).send({ from: currentAccount });
-  };
-
-  const getAccount = (address) => {
-      Axios.get('http:0.0.0.0:80/TB/api/v1.0/getAccount', {'addr':address}).then((result) => console.log(result))
-  };
-
-  const setAccount = (address,status,balance) => {
-    contract.methods.setAccount(address, status, balance).send({from:currentAccount})
-  }
+  }, [currentAccount]);
 
   return (
     <div className="App">
@@ -64,7 +54,11 @@ const App = () => {
             <Test />
           </Route>
           <Route path="*">
-            <Error initAccount={initAccount} getAccount={getAccount} setAccount={setAccount}/>
+            <Error
+              initAccount={initAccount}
+              getAccount={getAccount}
+              setAccount={setAccount}
+            />
           </Route>
         </Switch>
       </Router>

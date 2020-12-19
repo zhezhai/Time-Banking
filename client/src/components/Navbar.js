@@ -9,7 +9,7 @@ import { TBContext } from "../context/context";
 
 function Navbar() {
   const [sidebar, setSidebar] = useState(false);
-  const { account } = React.useContext(TBContext);
+  const { currentAccount } = React.useContext(TBContext);
 
   const showSidebar = () => setSidebar(!sidebar);
 
@@ -21,7 +21,7 @@ function Navbar() {
             <Link to="#" className="menu-bars">
               <FaIcons.FaBars onClick={showSidebar} />
             </Link>
-            <h3>welcome {account}</h3>
+            <h3>welcome {currentAccount}</h3>
           </div>
           <nav className={sidebar ? "nav-menu active" : "nav-menu"}>
             <ul className="nav-menu-items" onClick={showSidebar}>
