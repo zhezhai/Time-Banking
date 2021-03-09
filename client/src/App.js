@@ -8,6 +8,9 @@ import {
   GetService,
   Payment,
   Test,
+  ProviderConfirm,
+  Register,
+  PrivateRoute,
 } from "./pages";
 import { TBContext } from "./context/context";
 import GlobalStyle from "./GlobalStyle";
@@ -22,6 +25,8 @@ const App = () => {
     initAccount,
     setAccount,
     getAccount,
+    providers,
+    setProviders,
   } = React.useContext(TBContext);
 
   useEffect(() => {
@@ -32,34 +37,19 @@ const App = () => {
   return (
     <div className="App">
       <GlobalStyle />
-
       <Router>
         <Switch>
-          <Route path="/" exact={true}>
+          <PrivateRoute path="/" exact={true}>
             <Dashboard />
-          </Route>
-          <Route path="/login">
-            <Login />
-          </Route>
-          <Route path="/get_service">
-            <GetService />
-          </Route>
-          <Route path="/post_service">
-            <PostService />
-          </Route>
-          <Route path="/payment">
-            <Payment />
-          </Route>
-          <Route path="/test">
-            <Test />
-          </Route>
-          <Route path="*">
-            <Error
-              initAccount={initAccount}
-              getAccount={getAccount}
-              setAccount={setAccount}
-            />
-          </Route>
+          </PrivateRoute>
+          <Route path="/login" component={Login} />
+          <Route path="/get_service" component={GetService} />
+          <Route path="/post_service" component={PostService} />
+          <Route path="/payment" component={Payment} />
+          <Route path="/provider_confirm" component={ProviderConfirm} />
+          <Route path="/test" component={Test} />
+          <Route path="/register" component={Register} />
+          <Route path="*" component={Error} />
         </Switch>
       </Router>
     </div>

@@ -34,4 +34,10 @@ export const NavbarData = [
     icon: <AiIcons.AiFillHome />,
     cName: "nav-text",
   },
+  {
+    title: "P_confirm",
+    path: "/provider_confirm",
+    icon: <AiIcons.AiFillHome />,
+    cName: "nav-text",
+  }
 ];

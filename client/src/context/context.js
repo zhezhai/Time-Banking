@@ -2,31 +2,31 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Web3 from "web3";
 import abi from "../contracts/SrvExchange.json";
-import menu from "./data/data";
 import accounts from "./data/accounts";
 import Axios from "axios";
 
 const TBContext = React.createContext();
 const TBProvider = ({ children }) => {
-  const [isLoading, setIsLoading] = useState(false);
   const [currentAccount, setCurrentAccount] = useState("");
-  const [service, setService] = useState(menu);
   const [contract, setContract] = useState();
+  const [providers, setProviders] = useState({});
+  const [recipient, setRecipient] = useState({});
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // search the specific service
-  const searchTBService = (serviceName) => {
-    if (serviceName) {
-      const result = menu.filter(
-        (item) =>
-          item.category.includes(serviceName) ||
-          item.title.includes(serviceName)
-      );
-      setService(result);
-      console.log(result);
-    } else {
-      setService(menu);
-    }
-  };
+  // const searchTBService = (serviceName) => {
+  //   if (serviceName) {
+  //     const result = menu.filter(
+  //       (item) =>
+  //         item.category.includes(serviceName) ||
+  //         item.title.includes(serviceName)
+  //     );
+  //     setService(result);
+  //     console.log(result);
+  //   } else {
+  //     setService(menu);
+  //   }
+  // };
 
   // load browser web3
   const loadWeb3 = async () => {
@@ -60,33 +60,20 @@ const TBProvider = ({ children }) => {
     setContract(newContract);
   };
 
-  // const initAccount = async (address) => {
-  //   contract.methods.initAccount(address).send({ from: currentAccount });
-  // };
-
-  // const getAccount = async (address) => {
-  //   const response = await contract.methods.getAccount(address).call();
-  //   console.log(response)
-  // };
-
-  // const setAccount = (address, status, balance) => {
-  //   contract.methods
-  //     .setAccount(address, status, balance)
-  //     .send({ from: currentAccount });
-  // };
-
   return (
     <TBContext.Provider
       value={{
         loadWeb3,
         initContract,
-        service,
-        setService,
-        searchTBService,
         currentAccount,
         setCurrentAccount,
         contract,
-        // getAccount,
+        providers,
+        setProviders,
+        recipient,
+        setRecipient,
+        isLoggedIn,
+        setIsLoggedIn,
       }}
     >
       {children}

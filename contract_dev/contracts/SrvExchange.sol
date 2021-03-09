@@ -5,6 +5,8 @@ contract SrvExchange {
 	/*
 		Define struct to represent account of each participant.
 	*/
+	
+
 	struct Account {
 		uint uid;					// auto incremental number.
 		uint balance;				// balance to record time currency
@@ -38,7 +40,6 @@ contract SrvExchange {
 		string serviceInfo;			// service information by provider
 		uint status;				// current status: 0-Initialized; 1-Registered; 2-Confirmed; 3-Committed
 	}
-
 
 	// Global state variables
 	address private constant supervisor = 0xBC917c093788EfFE54D9A519BB237657F9Df159E;
@@ -299,5 +300,6 @@ contract SrvExchange {
 		}
 		return false;
 	}	
+
 
 }
