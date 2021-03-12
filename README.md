@@ -50,3 +50,6 @@ The front-end to create the user interface, designed using react and web3.js
 * pages: This folder contains the pages of the website.
 
 * App.js: using react-routing-dom to perform the routing between different pages.
+
+### lab_version
+This is the lab version of the Time-Banking app

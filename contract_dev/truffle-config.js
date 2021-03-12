@@ -12,7 +12,7 @@ module.exports = {
     },
   },
   contracts_build_directory:
-    "/Users/zhezhai/VscodeProjects/BlockChain/Time_Banking/client/src/contracts",
+    "/home/zzhai/timebanking/client/src/contracts",
   compilers: {
     solc: {
       version: "0.4.18",

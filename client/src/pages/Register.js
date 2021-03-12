@@ -10,13 +10,13 @@ const Register = () => {
   const [log, setLog] = useState("");
 
   const submitHandler = () => {
-    Axios.get("http://127.0.0.1:3001/user_list", {
+    Axios.get("http://localhost:3001/user_list", {
       params: {
         name: user.name,
       },
     }).then((response) => {
       if (response.data == "no user") {
-        Axios.post("http://127.0.0.1:3001/register", {
+        Axios.post("http://localhost:3001/register", {
           name: user.name,
           password: user.password,
           address: user.address,
@@ -31,7 +31,7 @@ const Register = () => {
   };
 
   const test = () => {
-    Axios.get("http://127.0.0.1:3001/user_list", {
+    Axios.get("http://localhost:3001/user_list", {
       params: {
         name: user.name,
       },
