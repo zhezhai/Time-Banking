@@ -10,8 +10,8 @@ import {
   Test,
   ProviderConfirm,
   Register,
-  PrivateRoute,
 } from "./pages";
+import { PrivateRoute } from "./components";
 import { TBContext } from "./context/context";
 import GlobalStyle from "./GlobalStyle";
 
@@ -43,10 +43,18 @@ const App = () => {
             <Dashboard />
           </PrivateRoute>
           <Route path="/login" component={Login} />
-          <Route path="/get_service" component={GetService} />
-          <Route path="/post_service" component={PostService} />
-          <Route path="/payment" component={Payment} />
-          <Route path="/provider_confirm" component={ProviderConfirm} />
+          <PrivateRoute path="/get_service">
+            <GetService />
+          </PrivateRoute>
+          <PrivateRoute path="/post_service">
+            <PostService />
+          </PrivateRoute>
+          <PrivateRoute path="/payment">
+            <Payment />
+          </PrivateRoute>
+          <PrivateRoute path="/provider_confirm">
+            <ProviderConfirm />
+          </PrivateRoute>
           <Route path="/test" component={Test} />
           <Route path="/register" component={Register} />
           <Route path="*" component={Error} />

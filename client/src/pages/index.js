@@ -7,8 +7,6 @@ import Payment from "./Payment";
 import Test from "./Supervisor";
 import ProviderConfirm from "./ProviderConfirm";
 import Register from "./Register";
-import PrivateRoute from "./PrivateRoute";
-
 export {
   Dashboard,
   Login,
@@ -19,5 +17,4 @@ export {
   Test,
   ProviderConfirm,
   Register,
-  PrivateRoute,
 };

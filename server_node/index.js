@@ -108,6 +108,8 @@ app.get("/logout", (req, res) => {
   }
 });
 
-app.listen(3001, () => {
-  console.log("success");
+const server = app.listen(3001, () => {
+  let host = server.address().address;
+  let port = server.address().port;
+  console.log("success", host, port);
 });

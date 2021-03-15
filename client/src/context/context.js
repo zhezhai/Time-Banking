@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState } from "react";
 import Web3 from "web3";
-import abi from "../contracts/SrvExchange.json";
+import SrvExchange from "../contracts/SrvExchange.json";
 import accounts from "./data/accounts";
-import Axios from "axios";
 
 const TBContext = React.createContext();
 const TBProvider = ({ children }) => {
@@ -43,20 +41,15 @@ const TBProvider = ({ children }) => {
   };
 
   const initContract = async () => {
-    if (
-      typeof window.ethereum == "undefined" ||
-      typeof window.web3 == "undefined"
-    ) {
-      return;
-    }
-    const web3 = window.web3;
+    const web3 = new Web3('http://127.0.0.1:8042');
     const accounts = await web3.eth.getAccounts();
     const account = accounts[0];
     setCurrentAccount(account);
+    console.log(accounts);
 
     const networkId = await web3.eth.net.getId();
-    const address = abi.networks[networkId].address;
-    const newContract = new web3.eth.Contract(abi.abi, address);
+    const address = SrvExchange.networks[networkId].address;
+    const newContract = new web3.eth.Contract(SrvExchange.abi, address);
     setContract(newContract);
   };
 
