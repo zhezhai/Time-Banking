@@ -7,8 +7,6 @@ const TBContext = React.createContext();
 const TBProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState("");
   const [contract, setContract] = useState();
-  const [providers, setProviders] = useState({});
-  const [recipient, setRecipient] = useState({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   // search the specific service
@@ -102,10 +100,6 @@ const TBProvider = ({ children }) => {
         currentUser,
         setCurrentUser,
         contract,
-        providers,
-        setProviders,
-        recipient,
-        setRecipient,
         isLoggedIn,
         setIsLoggedIn,
         SrvExchangeToken,

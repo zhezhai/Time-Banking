@@ -1,7 +1,7 @@
 import Dashboard from "./Dashboard";
 import Login from "./Login";
 import Error from "./Error";
-import GetService from "./GetService";
+import MyService from "./MyService";
 import PostService from "./PostService";
 import Payment from "./Payment";
 import Supervisor from "./Supervisor";
@@ -12,7 +12,7 @@ export {
   Login,
   Error,
   PostService,
-  GetService,
+  MyService,
   Payment,
   Supervisor,
   ProviderConfirm,

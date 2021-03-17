@@ -1,35 +1,32 @@
 import React, { useState, useEffect } from "react";
 import { TBContext } from "../context/context";
 import Service from "./Service";
-import styled from 'styled-components'
+import styled from "styled-components";
+import { Container,Row } from "react-bootstrap";
+import Axios from "axios";
 
 const ServiceList = () => {
-  const { providers, setProviders } = React.useContext(TBContext);
+  const [serviceList, setServiceList] = useState([]);
+
+  Axios.defaults.withCredentials = true;
+
+  const show_provider = async () => {
+    const result = await Axios.get("http://localhost:3001/showProviders");
+    setServiceList(result.data);
+  };
 
   useEffect(() => {
-    const data = localStorage.getItem("provider_info");
-    setProviders(JSON.parse(data));
+    show_provider();
   }, []);
 
-  if (providers) {
-    return (
-      <div className="section-center">
-        {/* {providers != null ? (
-        providers.map((provider) => {
-          return <Service key={provider.id} id={provider.id} provider_info={provider} />;
-        })
-      ) : (
-        
-      )} */}
-        <Service provider_info={providers} />
-      </div>
-    );
-  }
-
   return (
-    <div className='container'>
-      <h2>there is no information</h2>
-    </div>
+    <Container className="d-flex align-items-center justify-content-center">
+      <Row>
+        {serviceList.map((service) => {
+          return <Service provider_info={service} key={service.id}/>;
+        })}
+      </Row>
+    </Container>
   );
 };
 
@@ -38,6 +35,6 @@ const Wrapper = styled.div`
     display: flex;
     justify-content: center;
   }
-`
+`;
 
 export default ServiceList;

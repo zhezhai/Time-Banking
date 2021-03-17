@@ -1,46 +1,59 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { TBContext } from "../context/context";
+import { Card, Button, ListGroup, Col } from "react-bootstrap";
+import Axios from "axios";
+import cookie from "react-cookies";
 
 const Service = ({ provider_info }) => {
-  const {
-    contract,
-    providers,
-    currentAccount,
-    setRecipient,
-    recipient,
-    setProviders,
-    setCurrentAccount
-  } = React.useContext(TBContext);
-
-  const updateRecipient = async () => {
-    const data = JSON.parse(localStorage.getItem("provider_info"));
-    contract.methods
-      .updateRecipient(data.address, data.service)
-      .send({ from: currentAccount });
-    setRecipient({ address: data.address, service: data.service });
-    setCurrentAccount(await window.web3.eth.getAccounts())
+  const createRecipient = () => {
+    const user = cookie.load("user");
+    Axios.post("http://localhost:3001/createRecipient", {
+      recipient_serviceid: provider_info.id,
+      provider_name: provider_info.provider_name,
+      recipient_name: user.name,
+      recipient_serviceinfo: provider_info.provider_service,
+      recipient_price: provider_info.provider_price,
+      recipient_vid: user.address,
+    }).then((response) => {
+      console.log(response);
+    });
   };
 
-  useEffect(() => {
-    localStorage.setItem("recipient_info", JSON.stringify(recipient));
-    localStorage.setItem('currentAccount', JSON.stringify(currentAccount))
-  },[recipient,currentAccount]);
-
   return (
-    <article className="menu-item">
-      <div className="item-info">
-        <header>
-          <h4>provider: {provider_info.name}</h4>
-        </header>
-        <p className="item-text">
-          service information: {provider_info.service}
-        </p>
-        <p className="item-text">price: {provider_info.price}</p>
-        <Link to="/get_service">purchase</Link>
-        <button onClick={updateRecipient}>test</button>
-      </div>
-    </article>
+    <Col>
+      <Card style={{ width: "30rem" }}>
+        <Card.Body>
+          <ListGroup>
+            <ListGroup.Item>
+              provider_name: {provider_info.provider_name}
+            </ListGroup.Item>
+            <ListGroup.Item>
+              service_info: {provider_info.provider_service}
+            </ListGroup.Item>
+            <ListGroup.Item>
+              price: {provider_info.provider_price}
+            </ListGroup.Item>
+          </ListGroup>
+          <Link
+            to={{
+              pathname: "/myservice",
+              state: {
+                service_id: provider_info.id,
+              },
+            }}
+          >
+            <Button
+              onClick={() => {
+                createRecipient();
+              }}
+            >
+              buy service
+            </Button>
+          </Link>
+        </Card.Body>
+      </Card>
+    </Col>
   );
 };
 

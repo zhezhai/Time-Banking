@@ -1,53 +1,52 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Navbar } from "../components/index";
 import styled from "styled-components";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useForm } from "react-hook-form";
 import { TBContext } from "../context/context";
+import Axios from "axios";
+import cookie from "react-cookies";
 
 const PostService = () => {
-  const { contract, providers, setProviders, currentAccount } = React.useContext(
-    TBContext
-  );
-  const { register, handleSubmit, error } = useForm();
+  const {} = React.useContext(TBContext);
+  const serviceInfoRef = useRef();
+  const priceRef = useRef();
 
-  const updateProvider = async (data) => {
-    let provider_addr = await window.web3.eth.getAccounts();
-    contract.methods
-      .updateProvider(provider_addr[0], data.provider_service)
-      .send({ from: currentAccount });
-    setProviders(
-      {name: data.provider_name,
-      service: data.provider_service,
-      price: data.provider_price,
-      address: provider_addr[0]}
-    );
-    // console.log(data);
-    // console.log(provider_addr);
-    // console.log(data.provider_service);
+  Axios.defaults.withCredentials = true;
+
+  const postService = () => {
+    Axios.post("http://localhost:3001/createProvider", {
+      provider_service: serviceInfoRef.current.value,
+      provider_price: priceRef.current.value,
+    }).then((response) => {
+      console.log(response);
+    });
   };
 
-  useEffect(() => {
-    localStorage.setItem("provider_info", JSON.stringify(providers));
-  }, [providers]);
+  const updateProvider = () => {
+    const user = cookie.load("user");
+    Axios.post("http://localhost:80/TB/api/v1.0/registerService", {
+      client_addr: user.address,
+      op_state: 2,
+      service_info: serviceInfoRef.current.value,
+    }).then((response) => {
+      if (response.data.registerService == "Succeed") {
+        window.alert("service post successful");
+      }
+    });
+  };
+
+  const test = () => {
+    console.log(cookie.load("user"));
+  };
 
   return (
     <div>
       <Navbar />
       <Wrapper>
         <div className="container">
-          <form onSubmit={handleSubmit(updateProvider)}>
-            <div className="form-group">
-              <label htmlFor="provider_name">provider name</label>
-              <input
-                type="text"
-                className="form-control"
-                name="provider_name"
-                placeholder="please enter your name"
-                ref={register}
-              />
-            </div>
+          <form>
             <div className="form-group">
               <label htmlFor="provider_service">service info</label>
               <input
@@ -55,7 +54,7 @@ const PostService = () => {
                 className="form-control"
                 name="provider_service"
                 placeholder="please enter your service info"
-                ref={register}
+                ref={serviceInfoRef}
               />
             </div>
             <div className="form-group">
@@ -65,18 +64,22 @@ const PostService = () => {
                 className="form-control"
                 name="provider_price"
                 placeholder="please enter your price"
-                ref={register}
+                ref={priceRef}
               />
             </div>
-            <button className="btn btn-primary">post service</button>
+            <button
+              type="submit"
+              className="btn btn-primary"
+              onClick={(e) => {
+                e.preventDefault();
+                postService();
+                updateProvider();
+              }}
+            >
+              post service
+            </button>
           </form>
-          <button
-            onClick={() => {
-              console.log(providers);
-            }}
-          >
-            test
-          </button>
+          <button onClick={test}>test</button>
         </div>
       </Wrapper>
     </div>

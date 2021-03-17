@@ -5,16 +5,15 @@ import {
   Login,
   Error,
   PostService,
-  GetService,
+  MyService,
   Payment,
-  Test,
   ProviderConfirm,
   Register,
+  Supervisor,
 } from "./pages";
 import { PrivateRoute, AdminRoute } from "./components";
 import { TBContext } from "./context/context";
 import GlobalStyle from "./GlobalStyle";
-import Supervisor from "./pages/Supervisor";
 
 const App = () => {
   const { initContract, ethEnabled } = React.useContext(TBContext);
@@ -31,8 +30,8 @@ const App = () => {
           <PrivateRoute path="/" exact={true}>
             <Dashboard />
           </PrivateRoute>
-          <PrivateRoute path="/get_service">
-            <GetService />
+          <PrivateRoute path="/myservice">
+            <MyService />
           </PrivateRoute>
           <PrivateRoute path="/post_service">
             <PostService />

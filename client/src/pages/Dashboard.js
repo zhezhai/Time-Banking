@@ -7,22 +7,17 @@ import Axios from "axios";
 import cookie from "react-cookies";
 
 const Dashboard = () => {
-  const { setProviders, providers, setIsLoggedIn } = React.useContext(
-    TBContext
-  );
+  const { setIsLoggedIn } = React.useContext(TBContext);
 
   Axios.defaults.withCredentials = true;
   useEffect(() => {
     Axios.get("http://localhost:3001/login").then((response) => {
       if (response.data.user) {
-        console.log(response);
         setIsLoggedIn(true);
       } else {
-        console.log(response);
         console.log("no data");
       }
     });
-    setProviders(JSON.parse(localStorage.getItem("provider_info")));
   }, []);
 
   return (
@@ -31,7 +26,6 @@ const Dashboard = () => {
         <Navbar />
         <Search />
         <ServiceList />
-  
       </div>
     </Wrapper>
   );

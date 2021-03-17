@@ -128,9 +128,75 @@ app.get("/login", (req, res) => {
 });
 
 app.get("/logout", (req, res) => {
-    req.session.destroy();
-    res.send("session destroyed");
+  req.session.destroy();
+  res.send("session destroyed");
 });
+
+app.post("/createProvider", (req, res) => {
+  const provider_service = req.body.provider_service;
+  const provider_price = req.body.provider_price;
+  if (req.session.user) {
+    const provider_name = req.session.user[0].name;
+    const provider_vid = req.session.user[0].address;
+    db.query(
+      "INSERT INTO provider (provider_name, provider_service, provider_price, provider_vid) VALUES (?,?,?,?)",
+      [provider_name, provider_service, provider_price, provider_vid],
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+          res.send(result);
+        }
+      }
+    );
+  }
+});
+
+app.get("/showProviders", (req, res) => {
+  db.query("SELECT * FROM provider", (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send(result);
+    }
+  });
+});
+
+app.post("/createRecipient", (req, res) => {
+  const serviceid = req.body.recipient_serviceid;
+  const provider_name = req.body.provider_name;
+  const name = req.body.recipient_name;
+  const service_info = req.body.recipient_serviceinfo;
+  const price = req.body.recipient_price;
+  const address = req.body.recipient_vid;
+  db.query(
+    "INSERT INTO recipient (service_id, provider_name, recipient_name, recipient_service, recipient_price, recipient_vid) VALUES (?,?,?,?,?,?)",
+    [serviceid, provider_name, name, service_info, price, address],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.send(result);
+      }
+    }
+  );
+});
+
+app.get("/showRecipients", (req, res) => {
+  db.query("SELECT * FROM recipient", (err, result) => {
+    if (err) {
+      console.log(err);
+    }
+    if (result.length != 0) {
+      res.send(result);
+    } else {
+      res.send("empty recipient list");
+    }
+  });
+});
+
+app.get("get");
 
 app.listen(3001, () => {
   console.log("success");

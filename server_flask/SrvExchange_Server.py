@@ -18,8 +18,7 @@ from utilities import FileUtil, TypesUtil
 from SrvExchangeToken import SrvExchangeToken
 
 app = Flask(__name__)
-
-CORS(app)
+CORS(app,supports_credentials=True)
 
 # global variable
 addr_list = './addr_list.json'
