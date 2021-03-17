@@ -42,7 +42,11 @@ app.get("/user_list", (req, res) => {
         "select * from user where name = ?",
         [req.query.name],
         (err, result) => {
-          res.send(result[0].name);
+          if (result.length == 0) {
+            res.send("no matched user from database");
+          } else {
+            res.send(result);
+          }
         }
       );
     }
@@ -66,6 +70,30 @@ app.post("/register", (req, res) => {
       }
     }
   );
+});
+
+// login post method for supervisor
+app.post("/admin_login", (req, res) => {
+  const name = req.body.name;
+  const password = req.body.password;
+  if (name == "admin") {
+    db.query(
+      "SELECT * FROM user WHERE name = ? AND password = ?",
+      [name, password],
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        }
+        if (result.length != 0) {
+          req.session.user = result;
+          console.log(req.session.user);
+          res.send({ message: "supervisor is logged in", result: result });
+        }
+      }
+    );
+  } else {
+    res.send({ message: "wrong name for administrator" });
+  }
 });
 
 app.post("/login", (req, res) => {
@@ -100,16 +128,10 @@ app.get("/login", (req, res) => {
 });
 
 app.get("/logout", (req, res) => {
-  if (req.session.user) {
     req.session.destroy();
     res.send("session destroyed");
-  } else {
-    res.send("there is no session");
-  }
 });
 
-const server = app.listen(3001, () => {
-  let host = server.address().address;
-  let port = server.address().port;
-  console.log("success", host, port);
+app.listen(3001, () => {
+  console.log("success");
 });

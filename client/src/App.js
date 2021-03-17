@@ -11,28 +11,17 @@ import {
   ProviderConfirm,
   Register,
 } from "./pages";
-import { PrivateRoute } from "./components";
+import { PrivateRoute, AdminRoute } from "./components";
 import { TBContext } from "./context/context";
 import GlobalStyle from "./GlobalStyle";
+import Supervisor from "./pages/Supervisor";
 
 const App = () => {
-  const {
-    loadWeb3,
-    initContract,
-    currentAccount,
-    setCurrentAccount,
-    contract,
-    initAccount,
-    setAccount,
-    getAccount,
-    providers,
-    setProviders,
-  } = React.useContext(TBContext);
+  const { initContract, ethEnabled } = React.useContext(TBContext);
 
   useEffect(() => {
-    loadWeb3();
-    initContract();
-  }, [currentAccount]);
+    ethEnabled();
+  }, []);
 
   return (
     <div className="App">
@@ -42,7 +31,6 @@ const App = () => {
           <PrivateRoute path="/" exact={true}>
             <Dashboard />
           </PrivateRoute>
-          <Route path="/login" component={Login} />
           <PrivateRoute path="/get_service">
             <GetService />
           </PrivateRoute>
@@ -55,7 +43,10 @@ const App = () => {
           <PrivateRoute path="/provider_confirm">
             <ProviderConfirm />
           </PrivateRoute>
-          <Route path="/test" component={Test} />
+          <AdminRoute path="/supervisor">
+            <Supervisor />
+          </AdminRoute>
+          <Route path="/login" component={Login} />
           <Route path="/register" component={Register} />
           <Route path="*" component={Error} />
         </Switch>

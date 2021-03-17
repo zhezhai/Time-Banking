@@ -225,9 +225,9 @@ if __name__ == "__main__":
 
     addr_list = './addr_list.json'
 
-    http_provider = 'http://localhost:8042'
+    http_provider = 'http://localhost:7545'
     contract_addr = SrvExchangeToken.getAddress('SrvExchangeToken', addr_list)
-    contract_config = '../contract_dev/build/contracts/SrvExchange.json'
+    contract_config = '/Users/zhezhai/VscodeProjects/BlockChain/Time_Banking/client/src/contracts/SrvExchange.json'
 
     # new SrvExchangeToken object
     mySrvExchange = SrvExchangeToken(
@@ -245,7 +245,7 @@ if __name__ == "__main__":
 
     # ------------------------------ RPC functions test -------------------------
 
-    node_address = SrvExchangeToken.getAddress('Desk_PI_Plus_Sam1', addr_list)
+    node_address = SrvExchangeToken.getAddress('zzhai_account1', addr_list)
     account_data = mySrvExchange.getAccount(node_address)
     # mySrvExchange.initAccount(node_address)
     # mySrvExchange.setAccount(node_address, 1, 10)
@@ -258,11 +258,11 @@ if __name__ == "__main__":
 
     # --------------------------------- service registration -----------------------------------
     provide_address = SrvExchangeToken.getAddress(
-        'Desk_PI_Plus_Sam1', addr_list)
+        'zzhai_account1', addr_list)
     # mySrvExchange.updateProvider(provide_address, "Samuel can provide house cleaning service.")
 
     recipient_address = SrvExchangeToken.getAddress(
-        'Desk_PI_Plus_Sam2', addr_list)
+        'zzhai_account2', addr_list)
     # mySrvExchange.updateRecipient(recipient_address, 'Bob need house cleaning service.')
 
     # --------------------------------- service negotiation -----------------------------------

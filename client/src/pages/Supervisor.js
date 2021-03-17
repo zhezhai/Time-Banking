@@ -1,245 +1,261 @@
+import React, { useEffect, useRef, useState } from "react";
 import Axios from "axios";
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
+import { useHistory } from "react-router-dom";
 import { TBContext } from "../context/context";
-import accounts from "../context/data/accounts";
-import Navbar from "../components/Navbar";
-import Web3 from "web3";
-import { useForm } from "react-hook-form";
-import "bootstrap/dist/css/bootstrap.min.css";
+import cookie from "react-cookies";
+import SrvExchange from "../contracts/SrvExchange.json";
+import {
+  Button,
+  Card,
+  Navbar,
+  Nav,
+  ListGroup,
+  Container,
+  Row,
+  Col,
+  Form,
+} from "react-bootstrap";
 
 const Supervisor = () => {
-  const supervisor = "0xBC917c093788EfFE54D9A519BB237657F9Df159E";
-  const { contract, currentAccount, setCurrentAccount } = React.useContext(
-    TBContext
+  const { initContract, SrvExchangeToken } = React.useContext(TBContext);
+  const history = useHistory();
+  const [trigger, setTrigger] = useState(false)
+  const [address, setAddress] = useState();
+  const [iAddress, setIAddress] = useState();
+  const [gInfo, setGInfo] = useState({ uid: "", balance: "", status: "" });
+  const [sInfo, setSInfo] = useState({ address: "", status: "", balance: "" });
+  const contract = new SrvExchangeToken(
+    "http://127.0.0.1:7545",
+    "0x4090cdc08D04A36D0ae868FcDdAeFE08427890F1",
+    SrvExchange
   );
-  const { register, handleSubmit } = useForm();
+  const [serviceInfo, setServiceInfo] = useState({
+    dealer_uid: "",
+    dealer_balance: "",
+    provider_vid: "",
+    provider_serviceinfo: "",
+    provider_status: "",
+    recipient_vid: "",
+    recipient_serviceinfo: "",
+    recipient_status: "",
+  });
 
-  const [accountInfo, setAccountInfo] = useState({});
-  const [isInit, setIsInit] = useState(false);
-  const [inputAccount, setInputAccount] = useState("");
-  const [serviceInfo, setServiceInfo] = useState({})
+  const getService = async () => {
+    const response = await Axios.get(
+      "http://localhost:80/TB/api/v1.0/getService"
+    );
+    setServiceInfo({
+      dealer_uid: response.data.data.dealer.uid,
+      dealer_balance: response.data.data.dealer.balance,
+      provider_vid: response.data.data.provider.vid,
+      provider_serviceinfo: response.data.data.provider.serviceinfo,
+      provider_status: response.data.data.provider.status,
+      recipient_vid: response.data.data.recipient.vid,
+      recipient_serviceinfo: response.data.data.recipient.serviceinfo,
+      recipient_status: response.data.data.recipient.status,
+    });
+  };
 
   useEffect(() => {
-    console.log(currentAccount);
-  }, [currentAccount]);
+    getService();
+  }, [trigger]);
 
-  const supervisorLogin = async () => {
-    const account = await window.web3.eth.getAccounts();
-    setCurrentAccount(account[0]);
-  };
-
-  const checkIsInit = async (address) => {
-    contract.methods
-      .getAccount(address)
-      .call()
-      .then((data) => {
-        if (data[0] !== "") {
-          setIsInit(true);
-        }
-      });
-  };
-
-  const initHandler = async (address) => {
-    console.log(address);
-    const web3Address = Web3.utils.toChecksumAddress(address);
-    await contract.methods
-      .initAccount(web3Address)
-      .send({ from: currentAccount });
-  };
-
-  const getHandler = (address) => {
-    if (address === "") {
-      window.alert("there is no account information");
-    } else {
-      contract.methods
-        .getAccount(address)
-        .call()
-        .then((data) => {
-          setAccountInfo(data);
-        });
-    }
-  };
-
-  const setAccountSubmit = (data) => {
-    contract.methods
-      .setAccount(
-        currentAccount,
-        Number(data["balance"]),
-        Number(data["status"])
-      )
-      .send({ from: currentAccount });
-  };
-
-  const initService = () => {
-    contract.methods.initService().send({ from: currentAccount });
-  };
-
-  const check = async () => {
-    const account = await window.web3.eth.getAccounts()
-    setCurrentAccount(account[0])
-  }
-
-  const getService = () => {
-    contract.methods.getService().call().then((data) => {
-      console.log(data);
-      setServiceInfo(data)
-    })
-  }
-
-  if (currentAccount == supervisor) {
-    return (
-      <>
-        <Navbar />
-        <Wrapper>
-          <div className="container">
-            {/* get the account status */}
-            <div className="blocks">
-              <h3>account status</h3>
-              {!isInit ? (
-                <h4>account is not initialized</h4>
-              ) : (
-                <h4>account is initialized</h4>
-              )}
-              <button className="btn" onClick={() => checkIsInit(accounts[2])}>
-                check
-              </button>
-            </div>
-
-            {/* init the account */}
-            <div className="blocks">
-              <h3>init account</h3>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  initHandler(inputAccount);
-                }}
-              >
-                <div className="form-group">
-                  <label>the account address you want to init</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Enter address"
-                    onChange={(e) => setInputAccount(e.target.value)}
-                  />
-                </div>
-                <button type="submit" className="btn btn-primary">
-                  init account
-                </button>
-              </form>
-            </div>
-
-            {/* function:get the account info */}
-            <div className="blocks">
-              <h3>get account info</h3>
-              <ul className="list-group">
-                <li className="list-group-item">
-                  account uid is: {accountInfo[0]}
-                </li>
-                <li className="list-group-item">
-                  account balance is: {accountInfo[1]}
-                </li>
-                <li className="list-group-item">
-                  account status is: {accountInfo[2]}
-                </li>
-              </ul>
-              <button
-                className="btn"
-                onClick={() => getHandler(currentAccount)}
-              >
-                getAccount
-              </button>
-            </div>
-
-            {/* set the account */}
-            <div className="blocks">
-              <h3>set Account</h3>
-              <form onSubmit={handleSubmit(setAccountSubmit)}>
-                <div className="form-group">
-                  <label>the account balance</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Enter balance"
-                    name="balance"
-                    ref={register}
-                  />
-                </div>
-                <div className="form-group">
-                  <label>the account status</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Enter status"
-                    name="status"
-                    ref={register}
-                  />
-                </div>
-                <button type="submit" className="btn btn-primary">
-                  set account
-                </button>
-              </form>
-            </div>
-
-            {/* init service function */}
-            <div className="blocks">
-              <h3>init service</h3>
-              <button className="btn btn-primary" onClick={initService}>
-                init service
-              </button>
-            </div>
-
-            <div className="check">
-              <button className="btn btn-primary" onClick={check}>check</button>
-            </div>
-
-            <div className = 'blocks'>
-            <p>dealer_balance: {serviceInfo.dealer_balance}</p>
-            <p>dealer_uid: {serviceInfo.dealer_uid}</p>
-            <p>provider_VID: {serviceInfo.provider_VID}</p>
-            <p>provider_serviceInfo: {serviceInfo.provider_serviceInfo}</p>
-            <p>provider_status: {serviceInfo.provider_status}</p>
-            <p>recipient_VID: {serviceInfo.recipient_VID}</p>
-            <p>recipient_serviceInfo: {serviceInfo.recipient_serviceInfo}</p>
-            <p>recipient_status: {serviceInfo.recipient_status}</p>
-              <button className = 'btn btn-primary' onClick={getService}>getService</button>
-            </div>
-          </div>
-        </Wrapper>
-      </>
-    );
-  }
   return (
     <>
-      <h2>you are not logged in as supervisor</h2>
-      <button className="btn btn-primary" onClick={supervisorLogin}>
-        login
-      </button>
+      <Navbar bg="dark" variant="dark" className="justify-content-center">
+        <Nav className="mr-auto ">
+          <Nav.Link>
+            <Button
+              onClick={() => {
+                Axios.get("http://localhost:3001/logout").then((response) => {
+                  console.log(response.data);
+                  cookie.remove("admin");
+                  history.push("/login");
+                });
+              }}
+            >
+              Logout
+            </Button>
+          </Nav.Link>
+        </Nav>
+      </Navbar>
+
+      <Container style={{ margin: "2rem" }}>
+        <Row>
+          <Col>
+            <Card style={{ width: "26rem" }}>
+              <Card.Body>
+                <Form>
+                  <Form.Group id="init_account">
+                    <Form.Label style={{ margin: "1rem" }}>
+                      Enter Account Address
+                    </Form.Label>
+                    <Form.Control
+                      type="text"
+                      onChange={(e) => {
+                        setAddress(e.target.value);
+                      }}
+                    />
+                  </Form.Group>
+                  <Button
+                    style={{ margin: "1rem" }}
+                    onClick={() => {
+                      contract.initAccount(address);
+                    }}
+                  >
+                    init account
+                  </Button>
+                </Form>
+              </Card.Body>
+            </Card>
+          </Col>
+
+          <Col>
+            <Card style={{ width: "26rem" }}>
+              <Card.Body>
+                <Form>
+                  <Form.Group id="get_account"></Form.Group>
+                  <Form.Label style={{ margin: "1rem" }}>
+                    Enter Account Address
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    onChange={(e) => {
+                      setAddress(e.target.value);
+                    }}
+                  />
+                  <Button
+                    onClick={async () => {
+                      const result = await contract.getAccount(address);
+                      const json_result = JSON.parse(JSON.stringify(result));
+                      setGInfo({
+                        uid: json_result[0],
+                        balance: json_result[1],
+                        status: json_result[2],
+                      });
+                      console.log(gInfo);
+                      console.log(json_result);
+                    }}
+                  >
+                    get account
+                  </Button>
+                </Form>
+                <ListGroup variant="flush">
+                  <ListGroup.Item>uid: {gInfo.uid}</ListGroup.Item>
+                  <ListGroup.Item>balance: {gInfo.balance}</ListGroup.Item>
+                  <ListGroup.Item>status: {gInfo.status}</ListGroup.Item>
+                </ListGroup>
+              </Card.Body>
+            </Card>
+          </Col>
+
+          <Col>
+            <Card style={{ width: "26rem" }}>
+              <Card.Body>
+                <Form>
+                  <Form.Group>
+                    <Form.Label>Enter Address</Form.Label>
+                    <Form.Control
+                      type="text"
+                      onChange={(e) => {
+                        setSInfo({ ...sInfo, address: e.target.value });
+                      }}
+                    ></Form.Control>
+                  </Form.Group>
+                  <Form.Group>
+                    <Form.Label>Enter status</Form.Label>
+                    <Form.Control
+                      type="text"
+                      onChange={(e) => {
+                        setSInfo({ ...sInfo, status: e.target.value });
+                      }}
+                    ></Form.Control>
+                  </Form.Group>
+                  <Form.Group>
+                    <Form.Label>Enter balance</Form.Label>
+                    <Form.Control
+                      type="text"
+                      onChange={(e) => {
+                        setSInfo({ ...sInfo, balance: e.target.value });
+                      }}
+                    ></Form.Control>
+                  </Form.Group>
+                  <Button
+                    type="submit"
+                    onClick={() => {
+                      contract.setAccount(
+                        sInfo.address,
+                        sInfo.status,
+                        sInfo.balance
+                      );
+                    }}
+                  >
+                    set account
+                  </Button>
+                </Form>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+
+        <Row>
+          <Card style={{ margin: "1rem" }}>
+            <Card.Body>
+              <Button
+                onClick={() => {
+                  contract.initService();
+                }}
+              >
+                Init Service
+              </Button>
+              <Button
+                onClick={async () => {
+                  const result = await contract.getService();
+                  console.log(result);
+                  setTrigger(!trigger)
+                }}
+              >
+                get Service
+              </Button>
+            </Card.Body>
+          </Card>
+        </Row>
+
+        <Row>
+          <Card>
+            <Card.Body>
+              <ListGroup>
+                <ListGroup.Item>
+                  dealer_uid: {serviceInfo.dealer_uid}
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  dealer_balance: {serviceInfo.dealer_balance}
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  provider_vid: {serviceInfo.provider_vid}
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  provider_serviceInfo:{serviceInfo.provider_serviceinfo}
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  provider_status: {serviceInfo.provider_status}
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  recipient_vid: {serviceInfo.recipient_vid}
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  recipient_serviceInfo: {serviceInfo.recipient_serviceinfo}
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  recipient_status: {serviceInfo.recipient_status}
+                </ListGroup.Item>
+              </ListGroup>
+            </Card.Body>
+          </Card>
+        </Row>
+      </Container>
     </>
   );
 };
-
-const Wrapper = styled.div`
-  .container {
-    display: flex;
-    flex-direction: column;
-    margin: auto;
-    justify-content: center;
-  }
-  .blocks {
-    display: flex;
-    flex-direction: column;
-    margin: 2rem auto;
-    padding: 2rem;
-    justify-content: center;
-    border: 1px solid black;
-  }
-  .check {
-    display: flex;
-    margin: auto;
-
-  }
-`;
 
 export default Supervisor;

@@ -41,7 +41,7 @@ contract SrvExchange {
 
     // Global state variables
     address private constant supervisor =
-        0x7869C857b0Cd847e0a42AFae78A14058Ef81c2B3;
+        0x6A1ed582B736AE088D2f16f9F8b8fa0a915b8165;
 
     // initialize struct object
     SrvDealer private dealer;

@@ -11,19 +11,26 @@ import cookie from "react-cookies";
 
 function Navbar() {
   const [sidebar, setSidebar] = useState(false);
-  const { currentAccount, isLoggedIn, setIsLoggedIn } = React.useContext(
-    TBContext
-  );
+  const {
+    currentUser,
+    setCurrentUser,
+    isLoggedIn,
+    setIsLoggedIn,
+  } = React.useContext(TBContext);
 
-  const showSidebar = () => setSidebar(!sidebar);
+  const setUser = () => {
+    if (cookie.load("user")) {
+      setCurrentUser(cookie.load("user"));
+      setIsLoggedIn(true);
+    }
+    if (cookie.load("admin")) {
+      setCurrentUser(cookie.load("admin"));
+      setIsLoggedIn(true);
+    }
+  };
 
   useEffect(() => {
-    const user_status = cookie.load("user");
-    if (user_status) {
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
-    }
+    setUser();
   }, []);
 
   return (
@@ -32,9 +39,9 @@ function Navbar() {
         <IconContext.Provider value={{ color: "#fff" }}>
           <div className="navbar">
             <Link to="#" className="menu-bars">
-              <FaIcons.FaBars onClick={showSidebar} />
+              <FaIcons.FaBars onClick={() => setSidebar(!sidebar)} />
             </Link>
-            <h3>welcome {currentAccount}</h3>
+            <h3>welcome {currentUser.name}</h3>
             {!isLoggedIn && (
               <Link to="/login" className="btn btn-primary">
                 login
@@ -45,12 +52,9 @@ function Navbar() {
               onClick={() => {
                 Axios.get("http://localhost:3001/logout").then((response) => {
                   console.log(response.data);
-                  if ((response.data = "session destroyed")) {
-                    cookie.remove("user");
-                    setIsLoggedIn(false);
-                  } else {
-                    console.log("already logged out");
-                  }
+                  cookie.remove("user");
+                  cookie.remove("admin");
+                  setIsLoggedIn(false);
                 });
               }}
             >
@@ -58,7 +62,7 @@ function Navbar() {
             </button>
           </div>
           <nav className={sidebar ? "nav-menu active" : "nav-menu"}>
-            <ul className="nav-menu-items" onClick={showSidebar}>
+            <ul className="nav-menu-items" onClick={() => setSidebar(!sidebar)}>
               <li className="navbar-toggle">
                 <Link to="#" className="menu-bars">
                   <AiIcons.AiOutlineClose />

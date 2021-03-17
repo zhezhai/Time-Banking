@@ -23,9 +23,9 @@ CORS(app)
 
 # global variable
 addr_list = './addr_list.json'
-http_provider = 'http://localhost:8042'
+http_provider = 'http://localhost:7545'
 # contract_addr = SrvExchangeToken.getAddress('SrvExchangeToken', addr_list)
-contract_addr = '0xe0aa13eC81abe8492aF432B9111ad6b34DEbAa67'
+contract_addr = '0x4090cdc08D04A36D0ae868FcDdAeFE08427890F1'
 contract_config = '/Users/zhezhai/VscodeProjects/BlockChain/Time_Banking/client/src/contracts/SrvExchange.json'
 
 

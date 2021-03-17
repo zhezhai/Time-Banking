@@ -4,7 +4,7 @@ import { Link, useHistory } from "react-router-dom";
 import Axios from "axios";
 
 const Signup = () => {
-  const namelRef = useRef();
+  const nameRef = useRef();
   const passwordRef = useRef();
   const addressRef = useRef();
   const [log, setLog] = useState();
@@ -14,16 +14,19 @@ const Signup = () => {
     e.preventDefault();
     Axios.get("http://localhost:3001/user_list", {
       params: {
-        name: namelRef.current.value,
+        name: nameRef.current.value,
       },
     }).then((response) => {
-      if (response.data == "no user") {
+      if (
+        response.data == "no user" ||
+        response.data == "no matched user from database"
+      ) {
         Axios.post("http://localhost:3001/register", {
-          name: namelRef.current.value,
+          name: nameRef.current.value,
           password: passwordRef.current.value,
           address: addressRef.current.value,
         }).then((response) => {
-          console.log(response);
+          console.log(response.data);
           history.push("/login");
         });
       } else {
@@ -33,6 +36,13 @@ const Signup = () => {
     });
   };
 
+  const test = (e) => {
+    e.preventDefault();
+    const name = nameRef.current.value;
+    const password = passwordRef.current.value;
+    const address = addressRef.current.value;
+    console.log(name, password, address);
+  };
   return (
     <>
       <Card>
@@ -41,7 +51,7 @@ const Signup = () => {
           <Form onSubmit={submitHandler}>
             <Form.Group id="name">
               <Form.Label>Username</Form.Label>
-              <Form.Control type="text" ref={namelRef} required />
+              <Form.Control type="text" ref={nameRef} required />
               {!log ? (
                 <Form.Text className="text-muted">
                   please enter your username

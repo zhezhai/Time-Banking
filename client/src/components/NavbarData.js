@@ -29,12 +29,6 @@ export const NavbarData = [
     cName: "nav-text",
   },
   {
-    title: "TestPage",
-    path: "/test",
-    icon: <AiIcons.AiFillHome />,
-    cName: "nav-text",
-  },
-  {
     title: "P_confirm",
     path: "/provider_confirm",
     icon: <AiIcons.AiFillHome />,

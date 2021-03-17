@@ -4,7 +4,7 @@ import Error from "./Error";
 import GetService from "./GetService";
 import PostService from "./PostService";
 import Payment from "./Payment";
-import Test from "./Supervisor";
+import Supervisor from "./Supervisor";
 import ProviderConfirm from "./ProviderConfirm";
 import Register from "./Register";
 export {
@@ -14,7 +14,7 @@ export {
   PostService,
   GetService,
   Payment,
-  Test,
+  Supervisor,
   ProviderConfirm,
   Register,
 };

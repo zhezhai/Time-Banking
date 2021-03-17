@@ -5,7 +5,7 @@ import accounts from "./data/accounts";
 
 const TBContext = React.createContext();
 const TBProvider = ({ children }) => {
-  const [currentAccount, setCurrentAccount] = useState("");
+  const [currentUser, setCurrentUser] = useState("");
   const [contract, setContract] = useState();
   const [providers, setProviders] = useState({});
   const [recipient, setRecipient] = useState({});
@@ -27,39 +27,80 @@ const TBProvider = ({ children }) => {
   // };
 
   // load browser web3
-  const loadWeb3 = async () => {
+  const ethEnabled = () => {
     if (window.ethereum) {
       window.web3 = new Web3(window.ethereum);
-      await window.ethereum.enable();
-    } else if (window.web3) {
-      window.web3 = new Web3(window.web3.currentProvider);
-    } else {
-      window.alert(
-        "Non-Ethereum browser detected. You should consider trying MetaMask!"
-      );
+      window.ethereum.enable();
+      return true;
     }
+    return false;
   };
 
   const initContract = async () => {
-    const web3 = new Web3('http://127.0.0.1:8042');
-    const accounts = await web3.eth.getAccounts();
-    const account = accounts[0];
-    setCurrentAccount(account);
-    console.log(accounts);
-
-    const networkId = await web3.eth.net.getId();
+    const networkId = await window.web3.eth.net.getId();
     const address = SrvExchange.networks[networkId].address;
-    const newContract = new web3.eth.Contract(SrvExchange.abi, address);
-    setContract(newContract);
+    const newContract = new window.web3.eth.Contract(SrvExchange.abi, address);
+    const accounts = await window.web3.eth.getAccounts();
+    newContract.methods
+      .setAccount("0xf61A109AF8d060aE1631c0848dC96826D0Ff0128", 10, 100)
+      .send({ from: accounts[0] });
   };
+
+  class SrvExchangeToken {
+    constructor(http_provider, contract_addr, contract_config) {
+      this.web3 = new Web3(http_provider);
+      this.contract_address = Web3.utils.toChecksumAddress(contract_addr);
+      this.contract_abi = contract_config.abi;
+      this.contract = new this.web3.eth.Contract(
+        this.contract_abi,
+        this.contract_address
+      );
+    }
+
+    async initAccount(address) {
+      const checksumAddr = Web3.utils.toChecksumAddress(address);
+      const accounts = await this.web3.eth.getAccounts();
+      const supervisor = accounts[0];
+      this.contract.methods
+        .initAccount(checksumAddr)
+        .send({ from: supervisor });
+    }
+
+    async getAccount(address) {
+      const checksumAddr = Web3.utils.toChecksumAddress(address);
+      return this.contract.methods.getAccount(checksumAddr).call();
+    }
+
+    async setAccount(address, status, balance) {
+      const checksumAddr = Web3.utils.toChecksumAddress(address);
+      const accounts = await this.web3.eth.getAccounts();
+      const supervisor = accounts[0];
+      this.contract.methods
+        .setAccount(checksumAddr, status, balance)
+        .send({ from: supervisor });
+    }
+
+    async initService() {
+      const accounts = await this.web3.eth.getAccounts();
+      const supervisor = accounts[0];
+      this.contract.methods
+        .initService()
+        .send({ from: supervisor, gas: 3000000 });
+    }
+
+    async getService() {
+      const result = await this.contract.methods.getService().call();
+      return result;
+    }
+  }
 
   return (
     <TBContext.Provider
       value={{
-        loadWeb3,
+        ethEnabled,
         initContract,
-        currentAccount,
-        setCurrentAccount,
+        currentUser,
+        setCurrentUser,
         contract,
         providers,
         setProviders,
@@ -67,6 +108,7 @@ const TBProvider = ({ children }) => {
         setRecipient,
         isLoggedIn,
         setIsLoggedIn,
+        SrvExchangeToken,
       }}
     >
       {children}

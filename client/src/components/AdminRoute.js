@@ -3,8 +3,8 @@ import { Route, Redirect } from "react-router-dom";
 import cookie from "react-cookies";
 import { TBContext } from "../context/context";
 
-const PrivateRoute = ({ children, ...rest }) => {
-  const status = cookie.load("user");
+const AdminRoute = ({ children, ...rest }) => {
+  const status = cookie.load("admin");
   return (
     <Route
       {...rest}
@@ -15,4 +15,4 @@ const PrivateRoute = ({ children, ...rest }) => {
   );
 };
 
-export default PrivateRoute;
+export default AdminRoute;

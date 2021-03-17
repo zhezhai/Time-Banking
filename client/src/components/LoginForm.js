@@ -33,6 +33,24 @@ const LoginForm = () => {
     });
   };
 
+  const adminHandler = (e) => {
+    e.preventDefault();
+    Axios.post("http://localhost:3001/admin_login", {
+      name: nameRef.current.value,
+      password: passwordRef.current.value,
+    }).then((response) => {
+      if (response.data.message == "supervisor is logged in") {
+        cookie.save("admin", response.data.result[0]);
+        console.log(response.data.result[0]);
+        setLog(response.data.message);
+        setIsLoggedIn(true);
+        history.push("/supervisor");
+      } else {
+        console.log(response.data.message);
+      }
+    });
+  };
+
   return (
     <>
       <Card>
@@ -53,6 +71,9 @@ const LoginForm = () => {
                 <Button className="w-100" type="submit">
                   Login
                 </Button>
+              </Col>
+              <Col>
+                <Button className="w-100" onClick={adminHandler}>admin login</Button>
               </Col>
               <Col>
                 <Link to="/register">
