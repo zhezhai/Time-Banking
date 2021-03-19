@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { TBContext } from "../context/context";
 import { Button } from "react-bootstrap";
 import Axios from "axios";
@@ -13,13 +13,9 @@ import {
 } from "./NavbarElements";
 
 function Navbar() {
-  const [sidebar, setSidebar] = useState(false);
-  const {
-    currentUser,
-    setCurrentUser,
-    isLoggedIn,
-    setIsLoggedIn,
-  } = React.useContext(TBContext);
+  const { setCurrentUser, isLoggedIn, setIsLoggedIn } = React.useContext(
+    TBContext
+  );
 
   const setUser = () => {
     if (cookie.load("user")) {
@@ -39,23 +35,14 @@ function Navbar() {
   return (
     <>
       <Nav>
+        <NavLink to="/myinfo">MyInfo</NavLink>
         <Bars />
         <NavMenu>
-          <NavLink to="/" >
-            Dashboard
-          </NavLink>
-          <NavLink to="/myservice" >
-            MyService
-          </NavLink>
-          <NavLink to="/post_service" >
-            PostService
-          </NavLink>
-          <NavLink to="/payment" >
-            Payment
-          </NavLink>
-          <NavLink to="/provider_confirm" >
-            ProviderConfirm
-          </NavLink>
+          <NavLink to="/">Dashboard</NavLink>
+          <NavLink to="/myservice">MyService</NavLink>
+          <NavLink to="/post_service">PostService</NavLink>
+          <NavLink to="/payment">Payment</NavLink>
+          <NavLink to="/provider_confirm">ProviderConfirm</NavLink>
           {/* Second Nav */}
           {/* <NavBtnLink to='/sign-in'>Sign In</NavBtnLink> */}
         </NavMenu>

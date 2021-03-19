@@ -3,12 +3,12 @@ import { Card, Form, Button, Row, Col } from "react-bootstrap";
 import Axios from "axios";
 import cookie from "react-cookies";
 import { TBContext } from "../context/context";
-import { Link, Redirect, useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 
 const LoginForm = () => {
   const nameRef = useRef();
   const passwordRef = useRef();
-  const { isLoggedIn, setIsLoggedIn } = React.useContext(TBContext);
+  const { setIsLoggedIn } = React.useContext(TBContext);
   const history = useHistory();
   const [log, setLog] = useState();
 
@@ -19,14 +19,14 @@ const LoginForm = () => {
       name: nameRef.current.value,
       password: passwordRef.current.value,
     }).then((response) => {
-      if (response.data.message == "you are logged in") {
+      if (response.data.message === "you are logged in") {
         cookie.save("user", response.data.result[0]);
         console.log(response.data.result[0]);
         setLog(response.data.message);
         setIsLoggedIn(true);
         history.push("/");
       }
-      if (response.data.message == "no matched user") {
+      if (response.data.message === "no matched user") {
         setLog("wrong username or password");
         console.log("no matched user");
       }
@@ -39,7 +39,7 @@ const LoginForm = () => {
       name: nameRef.current.value,
       password: passwordRef.current.value,
     }).then((response) => {
-      if (response.data.message == "supervisor is logged in") {
+      if (response.data.message === "supervisor is logged in") {
         cookie.save("admin", response.data.result[0]);
         console.log(response.data.result[0]);
         setLog(response.data.message);

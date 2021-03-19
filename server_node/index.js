@@ -33,26 +33,9 @@ const db = mysql.createConnection({
   database: "TimeBanking",
 });
 
-app.get("/user_list", (req, res) => {
-  db.query("select * from user", (err, result) => {
-    if (result.length == 0) {
-      res.send("no user");
-    } else {
-      db.query(
-        "select * from user where name = ?",
-        [req.query.name],
-        (err, result) => {
-          if (result.length == 0) {
-            res.send("no matched user from database");
-          } else {
-            res.send(result);
-          }
-        }
-      );
-    }
-  });
-});
+//====================================== api =========================================
 
+//register a user
 app.post("/register", (req, res) => {
   console.log(req.body);
   const name = req.body.name;
@@ -96,6 +79,7 @@ app.post("/admin_login", (req, res) => {
   }
 });
 
+//user login
 app.post("/login", (req, res) => {
   const name = req.body.name;
   const password = req.body.password;
@@ -110,7 +94,10 @@ app.post("/login", (req, res) => {
       if (result.length != 0) {
         req.session.user = result;
         console.log(req.session.user);
-        res.send({ message: "you are logged in", result: result });
+        res.send({
+          message: "you are logged in",
+          result: result,
+        });
       } else {
         res.send({ message: "no matched user" });
       }
@@ -118,6 +105,7 @@ app.post("/login", (req, res) => {
   );
 });
 
+//get user login status
 app.get("/login", (req, res) => {
   if (req.session.user) {
     res.send({ loggedIn: true, user: req.session.user });
@@ -127,11 +115,13 @@ app.get("/login", (req, res) => {
   }
 });
 
+//log out a user
 app.get("/logout", (req, res) => {
   req.session.destroy();
   res.send("session destroyed");
 });
 
+//create the provider when provider posted a service
 app.post("/createProvider", (req, res) => {
   const provider_service = req.body.provider_service;
   const provider_price = req.body.provider_price;
@@ -153,6 +143,28 @@ app.post("/createProvider", (req, res) => {
   }
 });
 
+//alter the provider status for service display, 0 is not choosen, 1 is choosen
+app.post("/alterProvider", (req, res) => {
+  const provider_status = req.body.provider_status;
+  const provider_id = req.body.provider_id;
+  db.query(
+    "UPDATE provider SET provider_status = ? WHERE id = ?",
+    [provider_status, provider_id],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        if (result.length === 0) {
+          res.send("provider not updated");
+        } else {
+          res.send({ message: "provider updated!", result: result });
+        }
+      }
+    }
+  );
+});
+
+//get the provider list
 app.get("/showProviders", (req, res) => {
   db.query("SELECT * FROM provider", (err, result) => {
     if (err) {
@@ -163,6 +175,26 @@ app.get("/showProviders", (req, res) => {
   });
 });
 
+//get a provider given the provider name
+app.get("/getProvider", (req, res) => {
+  db.query(
+    "SELECT * FROM provider WHERE provider_name = ?",
+    [req.query.name],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        if (result.length === 0) {
+          res.send("provider does not exist");
+        } else {
+          res.send(result);
+        }
+      }
+    }
+  );
+});
+
+//create a recipient when user clicks on the service card on dashboard
 app.post("/createRecipient", (req, res) => {
   const serviceid = req.body.recipient_serviceid;
   const provider_name = req.body.provider_name;
@@ -183,6 +215,7 @@ app.post("/createRecipient", (req, res) => {
   );
 });
 
+//show the recipient list
 app.get("/showRecipients", (req, res) => {
   db.query("SELECT * FROM recipient", (err, result) => {
     if (err) {
@@ -195,8 +228,6 @@ app.get("/showRecipients", (req, res) => {
     }
   });
 });
-
-app.get("get");
 
 app.listen(3001, () => {
   console.log("success");

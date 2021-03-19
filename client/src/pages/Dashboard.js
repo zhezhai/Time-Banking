@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { Navbar, Search, ServiceList } from "../components";
-import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { TBContext } from "../context/context";
 import Axios from "axios";
-import cookie from "react-cookies";
 
 const Dashboard = () => {
   const { setIsLoggedIn } = React.useContext(TBContext);
@@ -14,6 +12,7 @@ const Dashboard = () => {
     Axios.get("http://localhost:3001/login").then((response) => {
       if (response.data.user) {
         setIsLoggedIn(true);
+        console.log(response.data);
       } else {
         console.log("no data");
       }

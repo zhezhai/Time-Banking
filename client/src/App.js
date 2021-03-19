@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import {
   Dashboard,
@@ -10,13 +10,14 @@ import {
   ProviderConfirm,
   Register,
   Supervisor,
+  MyInfo,
 } from "./pages";
 import { PrivateRoute, AdminRoute } from "./components";
 import { TBContext } from "./context/context";
 import GlobalStyle from "./GlobalStyle";
 
 const App = () => {
-  const { initContract, ethEnabled } = React.useContext(TBContext);
+  const { ethEnabled } = React.useContext(TBContext);
 
   useEffect(() => {
     ethEnabled();
@@ -29,6 +30,9 @@ const App = () => {
         <Switch>
           <PrivateRoute path="/" exact={true}>
             <Dashboard />
+          </PrivateRoute>
+          <PrivateRoute path="/myinfo">
+            <MyInfo />
           </PrivateRoute>
           <PrivateRoute path="/myservice">
             <MyService />

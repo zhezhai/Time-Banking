@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
-import { TBContext } from "../context/context";
+import React from "react";
+import { Link, useHistory } from "react-router-dom";
 import { Card, Button, ListGroup, Col } from "react-bootstrap";
 import Axios from "axios";
 import cookie from "react-cookies";
@@ -18,6 +17,20 @@ const Service = ({ provider_info }) => {
     }).then((response) => {
       console.log(response);
     });
+  };
+
+  const updateProviderStatus = () => {
+    Axios.post("http://localhost:3001/alterProvider", {
+      provider_status: 1,
+      provider_id: provider_info.id,
+    }).then((response) => {
+      console.log(response);
+    });
+  };
+
+  const call = () => {
+    createRecipient();
+    updateProviderStatus();
   };
 
   return (
@@ -43,13 +56,7 @@ const Service = ({ provider_info }) => {
               },
             }}
           >
-            <Button
-              onClick={() => {
-                createRecipient();
-              }}
-            >
-              buy service
-            </Button>
+            <Button onClick={call}>add to MyService</Button>
           </Link>
         </Card.Body>
       </Card>

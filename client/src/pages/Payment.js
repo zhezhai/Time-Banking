@@ -1,81 +1,87 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Navbar } from "../components/index";
 import { Button } from "react-bootstrap";
-import styled from "styled-components";
 import { TBContext } from "../context/context";
 import { Link } from "react-router-dom";
+import cookie from "react-cookies";
+import Axios from "axios";
+import { Container, ListGroup, Card } from "react-bootstrap";
 
 const Payment = () => {
-  const {
-    providers,
-    contract,
-    recipient,
-    currentAccount,
-    setProviders,
-    setRecipient,
-  } = React.useContext(TBContext);
+  const user = cookie.load("user");
+  const [recipients, setRecipients] = useState([]);
 
-  const data = JSON.parse(localStorage.getItem("recipient_info"));
-  const current = JSON.parse(localStorage.getItem("currentAccount"));
-
-  useEffect(() => {
-    setProviders(JSON.parse(localStorage.getItem("provider_info")));
-    setRecipient(JSON.parse(localStorage.getItem("recipient_info")));
-  }, []);
-
-  const payment = () => {
-    contract.methods.service_payment(data.address).send({ from: current });
+  const recipientList = () => {
+    Axios.get("http://localhost:3001/showRecipients").then((response) => {
+      if (response.data == "empty recipient list") {
+        console.log("there is no data");
+        setRecipients([
+          {
+            provider_name: "empty",
+            recipient_service: "empty",
+            recipient_price: "empty",
+          },
+        ]);
+      } else {
+        setRecipients(response.data);
+      }
+    });
   };
 
   const recipientCommit = () => {
-    contract.methods.service_commit(data.address).send({ from: current });
+    Axios.post("http://localhost:80/TB/api/v1.0/commitService", {
+      client_addr: recipients[0].recipient_vid,
+    }).then((response) => {
+      console.log(response.data);
+    });
   };
 
+  const payment = () => {
+    Axios.post("http://localhost:80/TB/api/v1.0/paymentService", {
+      client_addr: recipients[0].recipient_vid,
+    }).then((response) => {
+      console.log(response.data);
+    });
+  };
+
+  const call = () => {
+    recipientCommit();
+    payment();
+  };
+
+  useEffect(() => {
+    recipientList();
+  }, []);
+
   return (
-    <Wrapper>
+    <>
       <Navbar />
-      <div className="container">
-        <h1>Payment page</h1>
-        <div className="container">
-          <div className="card">
-            <div className="card-body">
-              <h5 className="card-title">{providers.name}</h5>
-              <h6 className="card-subtitle mb-2 text-muted">
-                price: {providers.price}
-              </h6>
-              <p className="card-text">{providers.service}</p>
-              <button
-                className="btn btn-primary"
-                onClick={() => {
-                  recipientCommit();
-                  payment();
-                }}
-              >
-                click to commit
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Wrapper>
+
+      <Container className="d-flex align-items-center justify-content-center">
+        {recipients.map((recipient, index) => {
+          return (
+            <Card key={index}>
+              <Card.Title>payment</Card.Title>
+              <Card.Body>
+                <ListGroup>
+                  <ListGroup.Item>
+                    name: {recipient.provider_name}
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    service: {recipient.recipient_service}
+                  </ListGroup.Item>
+                  <ListGroup.Item>
+                    price: {recipient.recipient_price}
+                  </ListGroup.Item>
+                </ListGroup>
+                <Button onClick={call}>pay</Button>
+              </Card.Body>
+            </Card>
+          );
+        })}
+      </Container>
+    </>
   );
 };
-
-const Wrapper = styled.div`
-  .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .container h1 {
-    display: flex;
-    margin: auto;
-    width: 90%;
-    justify-content: center;
-  }
-  .btn {
-    margin: auto;
-  }
-`;
 
 export default Payment;

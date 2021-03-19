@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Axios from "axios";
 import { useHistory } from "react-router-dom";
 import { TBContext } from "../context/context";
@@ -17,7 +17,7 @@ import {
 } from "react-bootstrap";
 
 const Supervisor = () => {
-  const { initContract, SrvExchangeToken } = React.useContext(TBContext);
+  const { SrvExchangeToken } = React.useContext(TBContext);
   const history = useHistory();
   const [trigger, setTrigger] = useState(false)
   const [address, setAddress] = useState();

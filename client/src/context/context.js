@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import Web3 from "web3";
 import SrvExchange from "../contracts/SrvExchange.json";
 import accounts from "./data/accounts";
+import Axios from "axios";
 
 const TBContext = React.createContext();
 const TBProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState("");
-  const [contract, setContract] = useState();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [recipients, setRecipients] = useState();
 
   // search the specific service
   // const searchTBService = (serviceName) => {
@@ -92,17 +93,36 @@ const TBProvider = ({ children }) => {
     }
   }
 
+  const recipientList = () => {
+    Axios.get("http://localhost:3001/showRecipients").then((response) => {
+      if (response.data == "empty recipient list") {
+        console.log("there is no data");
+        setRecipients([
+          {
+            provider_name: "empty",
+            recipient_service: "empty",
+            recipient_price: "empty",
+          },
+        ]);
+      } else {
+        setRecipients(response.data);
+      }
+    });
+  };
+
   return (
     <TBContext.Provider
       value={{
-        ethEnabled,
-        initContract,
         currentUser,
         setCurrentUser,
-        contract,
+        ethEnabled,
+        initContract,
         isLoggedIn,
         setIsLoggedIn,
-        SrvExchangeToken,
+        recipients,
+        setRecipients,
+        recipientList,
+        SrvExchangeToken
       }}
     >
       {children}

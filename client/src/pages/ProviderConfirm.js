@@ -1,66 +1,101 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Navbar } from "../components";
 import { TBContext } from "../context/context";
 import { Link } from "react-router-dom";
-import styled from "styled-components";
+import Axios from "axios";
+import { Button, Container, ListGroup, Card } from "react-bootstrap";
+import cookie from "react-cookies";
 
 const ProviderConfirm = () => {
-  const {
-    providers,
-    contract,
-    currentAccount,
-    setProviders,
-  } = React.useContext(TBContext);
-  const data = JSON.parse(localStorage.getItem("provider_info"));
+  const [status, setStatus] = useState("");
+  const [provider, setProvider] = useState({});
+  const user = cookie.load("user");
 
-  const confirm = () => {
-    contract.methods
-      .provider_confirm(data.address)
-      .send({ from: data.address });
+  Axios.defaults.withCredentials = true;
+  const getProvider = () => {
+    Axios.get("http://localhost:3001/getProvider", {
+      params: {
+        name: user.name,
+      },
+    }).then((response) => {
+      if (response.data === "provider does not exist") {
+        console.log(response.data);
+      } else {
+        console.log(response.data[0]);
+        setProvider(response.data[0]);
+      }
+    });
+  };
+
+  const getService = () => {
+    Axios.get("http://localhost:80/TB/api/v1.0/getService").then((response) => {
+      setStatus(response.data.data.provider.status);
+    });
+  };
+
+  const confirmHandler = () => {
+    Axios.post("http://localhost:80/TB/api/v1.0/negotiateService", {
+      client_addr: provider.provider_vid,
+      op_state: 3,
+      time_currency: provider.provider_price,
+    }).then((response) => {
+      console.log(response.data);
+    });
   };
 
   const providerCommit = () => {
-    contract.methods
-      .service_commit(data.address)
-      .send({ from: data.address });
+    Axios.post("http://localhost:80/TB/api/v1.0/commitService", {
+      client_addr: provider.provider_vid,
+    }).then((response) => {
+      console.log(response.data);
+    });
+  };
+
+  const call = () => {
+    confirmHandler();
+    providerCommit();
   };
 
   useEffect(() => {
-    setProviders(data);
+    getProvider();
+    getService();
   }, []);
 
-  return (
-    <Wrapper>
-      <Navbar />
-      <div className="container">
-        <h1>ProviderConfirm</h1>
-        <div className="card">
-          <div className="card-body">
-            <h5 className="card-title">{providers.name}</h5>
-            <h6 className="card-subtitle mb-2 text-muted">
-              price: {providers.price}
-            </h6>
-            <p className="card-text">{providers.service}</p>
-            <button className="btn btn-primary" onClick={() => {
-              confirm();
-              providerCommit();
-            }}>
-              click to confirm
-            </button>
-          </div>
-        </div>
-      </div>
-    </Wrapper>
-  );
-};
-
-const Wrapper = styled.div`
-  .container {
-    display: flex;
-    margin: auto;
-    justify-content: center;
-    flex-direction: column;
+  if (status === 1) {
+    return (
+      <>
+        <Navbar />
+        <Container className="d-flex align-items-center justify-content-center">
+          <Card style={{ margin: "2rem", width: "30rem" }}>
+            <Card.Title>provider confirm</Card.Title>
+            <Card.Body>
+              <ListGroup>
+                <ListGroup.Item>name: {provider.provider_name}</ListGroup.Item>
+                <ListGroup.Item>
+                  service: {provider.provider_service}
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  price: {provider.provider_price}
+                </ListGroup.Item>
+                <ListGroup.Item>status: {status}</ListGroup.Item>
+              </ListGroup>
+              <Button onClick={call}>provider confirm</Button>
+            </Card.Body>
+          </Card>
+        </Container>
+      </>
+    );
+  } else {
+    return (
+      <>
+        <Navbar />
+        <Container className="d-flex align-items-center justify-content-center">
+          <h2>you have confirmed your service</h2>
+          <Button onClick={providerCommit}>test</Button>
+        </Container>
+      </>
+    );
   }
-`;
+};
 
 export default ProviderConfirm;

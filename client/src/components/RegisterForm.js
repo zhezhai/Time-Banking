@@ -18,8 +18,8 @@ const Signup = () => {
       },
     }).then((response) => {
       if (
-        response.data == "no user" ||
-        response.data == "no matched user from database"
+        response.data === "no user" ||
+        response.data === "no matched user from database"
       ) {
         Axios.post("http://localhost:3001/register", {
           name: nameRef.current.value,
@@ -36,13 +36,6 @@ const Signup = () => {
     });
   };
 
-  const test = (e) => {
-    e.preventDefault();
-    const name = nameRef.current.value;
-    const password = passwordRef.current.value;
-    const address = addressRef.current.value;
-    console.log(name, password, address);
-  };
   return (
     <>
       <Card>

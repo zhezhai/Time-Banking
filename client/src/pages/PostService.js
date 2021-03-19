@@ -1,15 +1,11 @@
-import React, { useEffect, useRef } from "react";
-import { Link } from "react-router-dom";
+import React, { useRef } from "react";
 import { Navbar } from "../components/index";
 import styled from "styled-components";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useForm } from "react-hook-form";
-import { TBContext } from "../context/context";
 import Axios from "axios";
 import cookie from "react-cookies";
 
 const PostService = () => {
-  const {} = React.useContext(TBContext);
   const serviceInfoRef = useRef();
   const priceRef = useRef();
 
@@ -31,7 +27,7 @@ const PostService = () => {
       op_state: 2,
       service_info: serviceInfoRef.current.value,
     }).then((response) => {
-      if (response.data.registerService == "Succeed") {
+      if (response.data.registerService === "Succeed") {
         window.alert("service post successful");
       }
     });

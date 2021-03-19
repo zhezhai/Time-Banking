@@ -1,11 +1,6 @@
-import Axios from "axios";
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
-import { TBContext } from "../context/context";
-import accounts from "../context/data/accounts";
-import Navbar from "../components/Navbar";
+import React from "react";
 
-const Error = ({ initAccount, getAccount, setAccount }) => {
+const Error = () => {
   return (
     <>
       <h2>Error</h2>

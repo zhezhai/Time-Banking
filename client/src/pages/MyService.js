@@ -2,13 +2,16 @@ import React, { useEffect, useState } from "react";
 import { Navbar } from "../components/index";
 import { Card, Button, ListGroup, Container } from "react-bootstrap";
 import { TBContext } from "../context/context";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useHistory } from "react-router-dom";
 import Axios from "axios";
+import cookie from "react-cookies";
 
 const MyService = () => {
   const {} = React.useContext(TBContext);
   const location = useLocation();
   const [recipients, setRecipients] = useState([]);
+  const user = cookie.load("user");
+  const history = useHistory();
 
   const recipientList = () => {
     Axios.get("http://localhost:3001/showRecipients").then((response) => {
@@ -22,16 +25,51 @@ const MyService = () => {
           },
         ]);
       } else {
-        setRecipients(response.data);
+        if (user.name !== response.data[0].recipient_name) {
+          setRecipients([
+            {
+              provider_name: "empty",
+              recipient_service: "empty",
+              recipient_price: "empty",
+            },
+          ]);
+        } else {
+          setRecipients(response.data);
+        }
       }
-      // setRecipients(response.data);
-      // console.log(response.data);
     });
   };
 
+  const updateRecipient = () => {
+    Axios.post("http://localhost:80/TB/api/v1.0/registerService", {
+      client_addr: user.address,
+      op_state: 1,
+      service_info: recipients[0].recipient_service,
+    }).then((response) => {
+      console.log(response);
+    });
+  };
+
+  const recipientDeposit = () => {
+    Axios.post("http://localhost:80/TB/api/v1.0/negotiateService", {
+      client_addr: user.address,
+      op_state: 1, //recipient deposit time currency
+      time_currency: recipients[0].recipient_price,
+    }).then((response) => {
+      console.log(response);
+    });
+  };
+
+  const call = () => {
+    updateRecipient();
+    recipientDeposit();
+    history.push("/payment");
+  };
+
+
   useEffect(() => {
     recipientList();
-  }, []);
+  }, [recipients]);
 
   return (
     <>
@@ -52,16 +90,11 @@ const MyService = () => {
                     price: {recipient.recipient_price}
                   </ListGroup.Item>
                 </ListGroup>
-                <Button>buy service</Button>
+                <Button onClick={call}>buy service</Button>
               </Card.Body>
             </Card>
           );
         })}
-        {/* <ListGroup>
-              <ListGroup.Item>name: {}</ListGroup.Item>
-              <ListGroup.Item>service_info: {}</ListGroup.Item>
-              <ListGroup.Item>price: {}</ListGroup.Item>
-            </ListGroup> */}
       </Container>
     </>
   );

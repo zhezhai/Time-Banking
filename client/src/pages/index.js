@@ -7,6 +7,7 @@ import Payment from "./Payment";
 import Supervisor from "./Supervisor";
 import ProviderConfirm from "./ProviderConfirm";
 import Register from "./Register";
+import MyInfo from "./MyInfo";
 export {
   Dashboard,
   Login,
@@ -17,4 +18,5 @@ export {
   Supervisor,
   ProviderConfirm,
   Register,
+  MyInfo,
 };

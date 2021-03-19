@@ -1,17 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { MdSearch } from "react-icons/md";
 import { TBContext } from "../context/context";
 
 const Search = () => {
   const [serviceName, setServiceName] = useState("");
-  const { searchTBService } = React.useContext(TBContext);
 
   const handleSubmit = (e) => {
     e.preventDefault()
     if (serviceName) {
       // more logic coming up soon
-      searchTBService(serviceName);
       //optional
       // setUser('');
     }

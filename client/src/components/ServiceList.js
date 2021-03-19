@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { TBContext } from "../context/context";
 import Service from "./Service";
 import styled from "styled-components";
-import { Container,Row } from "react-bootstrap";
+import { Container, Row, Button } from "react-bootstrap";
 import Axios from "axios";
 
 const ServiceList = () => {
@@ -10,9 +9,14 @@ const ServiceList = () => {
 
   Axios.defaults.withCredentials = true;
 
-  const show_provider = async () => {
-    const result = await Axios.get("http://localhost:3001/showProviders");
-    setServiceList(result.data);
+  const show_provider = () => {
+    Axios.get("http://localhost:3001/showProviders").then((response) => {
+      const results = response.data;
+      const filtered_results = results.filter(
+        (result) => result.provider_status === 0
+      );
+      setServiceList(filtered_results);
+    });
   };
 
   useEffect(() => {
@@ -23,18 +27,11 @@ const ServiceList = () => {
     <Container className="d-flex align-items-center justify-content-center">
       <Row>
         {serviceList.map((service) => {
-          return <Service provider_info={service} key={service.id}/>;
+          return <Service provider_info={service} key={service.id} />;
         })}
       </Row>
     </Container>
   );
 };
-
-const Wrapper = styled.div`
-  .container {
-    display: flex;
-    justify-content: center;
-  }
-`;
 
 export default ServiceList;
