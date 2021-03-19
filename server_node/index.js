@@ -35,6 +35,22 @@ const db = mysql.createConnection({
 
 //====================================== api =========================================
 
+//get all users
+app.get("/user_list", (req, res) => {
+  db.query("select * from user", (err, result) => {
+    if (result.length == 0) {
+      res.send("no user");
+    } else {
+      db.query(
+        "select * from user where name = ?",
+        [req.query.name],
+        (err, result) => {
+          res.send(result[0].name);
+        }
+      );
+    }
+  });
+});
 //register a user
 app.post("/register", (req, res) => {
   console.log(req.body);
