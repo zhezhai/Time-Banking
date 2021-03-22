@@ -1,18 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { Navbar } from "../components/index";
 import { Button } from "react-bootstrap";
-import { TBContext } from "../context/context";
-import { Link } from "react-router-dom";
 import cookie from "react-cookies";
-import Axios from "axios";
+import { axiosNode, axiosFlask } from "../helpers/axios";
 import { Container, ListGroup, Card } from "react-bootstrap";
 
 const Payment = () => {
   const user = cookie.load("user");
+  const [userInfo, setUserInfo] = useState({});
   const [recipients, setRecipients] = useState([]);
 
+  const showInfo = () => {
+    axiosNode.get("/login").then((response) => {
+      console.log(response.data.user[0]);
+      setUserInfo(response.data.user[0]);
+    });
+  };
+
   const recipientList = () => {
-    Axios.get("http://localhost:3001/showRecipients").then((response) => {
+    axiosNode.get("/showRecipients").then((response) => {
       if (response.data == "empty recipient list") {
         console.log("there is no data");
         setRecipients([
@@ -23,34 +29,83 @@ const Payment = () => {
           },
         ]);
       } else {
-        setRecipients(response.data);
+        const results = response.data;
+        const filtered_result = results.filter(
+          (result) => result.recipient_status === 0
+        );
+        if (filtered_result.length === 0) {
+          console.log("there is no data");
+          setRecipients([
+            {
+              provider_name: "empty",
+              recipient_service: "empty",
+              recipient_price: "empty",
+            },
+          ]);
+        } else {
+          if (user.name !== filtered_result[0].recipient_name) {
+            setRecipients([
+              {
+                provider_name: "empty",
+                recipient_service: "empty",
+                recipient_price: "empty",
+              },
+            ]);
+          } else {
+            setRecipients(filtered_result);
+          }
+        }
       }
     });
   };
 
   const recipientCommit = () => {
-    Axios.post("http://localhost:80/TB/api/v1.0/commitService", {
-      client_addr: recipients[0].recipient_vid,
-    }).then((response) => {
-      console.log(response.data);
-    });
+    axiosFlask
+      .post("/TB/api/v1.0/commitService", {
+        client_addr: recipients[0].recipient_vid,
+      })
+      .then((response) => {
+        console.log(response.data);
+      });
   };
 
   const payment = () => {
-    Axios.post("http://localhost:80/TB/api/v1.0/paymentService", {
-      client_addr: recipients[0].recipient_vid,
-    }).then((response) => {
-      console.log(response.data);
-    });
+    axiosFlask
+      .post("/TB/api/v1.0/paymentService", {
+        client_addr: recipients[0].recipient_vid,
+      })
+      .then((response) => {
+        console.log(response.data);
+      });
+  };
+
+  const updateRecipientStatus = () => {
+    axiosNode
+      .post("/alterRecipient", {
+        recipient_status: 1,
+        recipient_id: recipients[0].id,
+      })
+      .then((response) => {
+        console.log(response);
+      });
   };
 
   const call = () => {
     recipientCommit();
-    payment();
+    setTimeout(() => {
+      payment();
+    }, 400);
+    setTimeout(() => {
+      updateRecipientStatus();
+    }, 600);
+    setTimeout(() => {
+      window.alert("payment successfully processed!");
+    }, 800);
   };
 
   useEffect(() => {
     recipientList();
+    showInfo();
   }, []);
 
   return (

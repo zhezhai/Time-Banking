@@ -1,31 +1,35 @@
 import React from "react";
 import { Link, useHistory } from "react-router-dom";
 import { Card, Button, ListGroup, Col } from "react-bootstrap";
-import Axios from "axios";
+import {axiosNode, axiosFlask} from "../helpers/axios";
 import cookie from "react-cookies";
 
 const Service = ({ provider_info }) => {
   const createRecipient = () => {
     const user = cookie.load("user");
-    Axios.post("http://localhost:3001/createRecipient", {
-      recipient_serviceid: provider_info.id,
-      provider_name: provider_info.provider_name,
-      recipient_name: user.name,
-      recipient_serviceinfo: provider_info.provider_service,
-      recipient_price: provider_info.provider_price,
-      recipient_vid: user.address,
-    }).then((response) => {
-      console.log(response);
-    });
+    axiosNode
+      .post("/createRecipient", {
+        recipient_serviceid: provider_info.id,
+        provider_name: provider_info.provider_name,
+        recipient_name: user.name,
+        recipient_serviceinfo: provider_info.provider_service,
+        recipient_price: provider_info.provider_price,
+        recipient_vid: user.address,
+      })
+      .then((response) => {
+        console.log(response);
+      });
   };
 
   const updateProviderStatus = () => {
-    Axios.post("http://localhost:3001/alterProvider", {
-      provider_status: 1,
-      provider_id: provider_info.id,
-    }).then((response) => {
-      console.log(response);
-    });
+    axiosNode
+      .post("/alterProvider", {
+        provider_status: 1,
+        provider_id: provider_info.id,
+      })
+      .then((response) => {
+        console.log(response);
+      });
   };
 
   const call = () => {

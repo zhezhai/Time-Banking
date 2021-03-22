@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from "react";
 import Service from "./Service";
-import styled from "styled-components";
 import { Container, Row, Button } from "react-bootstrap";
-import Axios from "axios";
+import {axiosNode, axiosFlask} from "../helpers/axios";
 
 const ServiceList = () => {
   const [serviceList, setServiceList] = useState([]);
 
-  Axios.defaults.withCredentials = true;
-
   const show_provider = () => {
-    Axios.get("http://localhost:3001/showProviders").then((response) => {
+    axiosNode.get("/showProviders").then((response) => {
       const results = response.data;
       const filtered_results = results.filter(
         (result) => result.provider_status === 0

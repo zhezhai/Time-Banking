@@ -35,7 +35,7 @@ contract SrvExchange {
     struct SrvRecipient {
         uint256 uid; // auto incremental number.
         address VID; // recipient's VID, we use account address.
-        string serviceInfo; // service information by provider
+        string serviceInfo; // service information by recipient
         uint256 status; // current status: 0-Initialized; 1-Registered; 2-Confirmed; 3-Committed
     }
 

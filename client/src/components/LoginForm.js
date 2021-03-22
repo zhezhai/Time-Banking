@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import { Card, Form, Button, Row, Col } from "react-bootstrap";
-import Axios from "axios";
+import {axiosNode, axiosFlask} from "../helpers/axios";
 import cookie from "react-cookies";
 import { TBContext } from "../context/context";
 import { Link, useHistory } from "react-router-dom";
@@ -12,43 +12,46 @@ const LoginForm = () => {
   const history = useHistory();
   const [log, setLog] = useState();
 
-  Axios.defaults.withCredentials = true;
   const loginHandler = (e) => {
     e.preventDefault();
-    Axios.post("http://localhost:3001/login", {
-      name: nameRef.current.value,
-      password: passwordRef.current.value,
-    }).then((response) => {
-      if (response.data.message === "you are logged in") {
-        cookie.save("user", response.data.result[0]);
-        console.log(response.data.result[0]);
-        setLog(response.data.message);
-        setIsLoggedIn(true);
-        history.push("/");
-      }
-      if (response.data.message === "no matched user") {
-        setLog("wrong username or password");
-        console.log("no matched user");
-      }
-    });
+    axiosNode
+      .post("/login", {
+        name: nameRef.current.value,
+        password: passwordRef.current.value,
+      })
+      .then((response) => {
+        if (response.data.message === "you are logged in") {
+          cookie.save("user", response.data.result[0]);
+          console.log(response.data.result[0]);
+          setLog(response.data.message);
+          setIsLoggedIn(true);
+          history.push("/");
+        }
+        if (response.data.message === "no matched user") {
+          setLog("wrong username or password");
+          console.log("no matched user");
+        }
+      });
   };
 
   const adminHandler = (e) => {
     e.preventDefault();
-    Axios.post("http://localhost:3001/admin_login", {
-      name: nameRef.current.value,
-      password: passwordRef.current.value,
-    }).then((response) => {
-      if (response.data.message === "supervisor is logged in") {
-        cookie.save("admin", response.data.result[0]);
-        console.log(response.data.result[0]);
-        setLog(response.data.message);
-        setIsLoggedIn(true);
-        history.push("/supervisor");
-      } else {
-        console.log(response.data.message);
-      }
-    });
+    axiosNode
+      .post("/admin_login", {
+        name: nameRef.current.value,
+        password: passwordRef.current.value,
+      })
+      .then((response) => {
+        if (response.data.message === "supervisor is logged in") {
+          cookie.save("admin", response.data.result[0]);
+          console.log(response.data.result[0]);
+          setLog(response.data.message);
+          setIsLoggedIn(true);
+          history.push("/supervisor");
+        } else {
+          console.log(response.data.message);
+        }
+      });
   };
 
   return (
@@ -73,7 +76,9 @@ const LoginForm = () => {
                 </Button>
               </Col>
               <Col>
-                <Button className="w-100" onClick={adminHandler}>admin login</Button>
+                <Button className="w-100" onClick={adminHandler}>
+                  admin login
+                </Button>
               </Col>
               <Col>
                 <Link to="/register">

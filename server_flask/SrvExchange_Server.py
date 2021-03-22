@@ -22,9 +22,9 @@ CORS(app,supports_credentials=True)
 
 # global variable
 addr_list = './addr_list.json'
-http_provider = 'http://localhost:8042'
+http_provider = 'http://localhost:7545'
 # contract_addr = SrvExchangeToken.getAddress('SrvExchangeToken', addr_list)
-contract_addr = '0x4090cdc08D04A36D0ae868FcDdAeFE08427890F1'
+contract_addr = '0xe5324B925245b9c74e14FCD700De373636447529'
 contract_config = '/Users/zhezhai/VscodeProjects/BlockChain/Time_Banking/client/src/contracts/SrvExchange.json'
 
 
@@ -181,11 +181,6 @@ def paymentService():
     mySrvExchange.service_payment(client_addr)
 
     return jsonify({'paymentService': 'Succeed'}), 201
-
-
-@app.route('/', methods=['GET'])
-def index():
-    return '{msg:"无数据"}'
 
 
 if __name__ == '__main__':

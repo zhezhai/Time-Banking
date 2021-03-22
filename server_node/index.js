@@ -51,6 +51,7 @@ app.get("/user_list", (req, res) => {
     }
   });
 });
+
 //register a user
 app.post("/register", (req, res) => {
   console.log(req.body);
@@ -66,6 +67,27 @@ app.post("/register", (req, res) => {
         console.log(err);
       } else {
         res.send(result);
+      }
+    }
+  );
+});
+
+//set a user's balance
+app.post("/setUserBalance", (req, res) => {
+  const address = req.body.address;
+  const balance = req.body.balance;
+  db.query(
+    "UPDATE user SET balance = ? WHERE name = ?",
+    [balance, address],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        if (result.length === 0) {
+          res.send("user balance not updated");
+        } else {
+          res.send({ message: "user balance updated!", result: result });
+        }
       }
     }
   );
@@ -243,6 +265,27 @@ app.get("/showRecipients", (req, res) => {
       res.send("empty recipient list");
     }
   });
+});
+
+//alter the recipient status for service display, 0 is not finished, 1 is finished
+app.post("/alterRecipient", (req, res) => {
+  const status = req.body.recipient_status;
+  const id = req.body.recipient_id;
+  db.query(
+    "UPDATE recipient SET recipient_status = ? WHERE id = ?",
+    [status, id],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        if (result.length === 0) {
+          res.send("recipient not updated");
+        } else {
+          res.send({ message: "recipient updated!", result: result });
+        }
+      }
+    }
+  );
 });
 
 app.listen(3001, () => {

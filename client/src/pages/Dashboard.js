@@ -2,14 +2,13 @@ import React, { useEffect } from "react";
 import { Navbar, Search, ServiceList } from "../components";
 import styled from "styled-components";
 import { TBContext } from "../context/context";
-import Axios from "axios";
+import {axiosNode, axiosFlask} from "../helpers/axios";
 
 const Dashboard = () => {
   const { setIsLoggedIn } = React.useContext(TBContext);
 
-  Axios.defaults.withCredentials = true;
   useEffect(() => {
-    Axios.get("http://localhost:3001/login").then((response) => {
+    axiosNode.get("/login").then((response) => {
       if (response.data.user) {
         setIsLoggedIn(true);
         console.log(response.data);

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import Axios from "axios";
+import { axiosNode, axiosFlask } from "../helpers/axios";
 import { useHistory } from "react-router-dom";
 import { TBContext } from "../context/context";
 import cookie from "react-cookies";
@@ -19,14 +19,14 @@ import {
 const Supervisor = () => {
   const { SrvExchangeToken } = React.useContext(TBContext);
   const history = useHistory();
-  const [trigger, setTrigger] = useState(false)
+  const [trigger, setTrigger] = useState(false);
   const [address, setAddress] = useState();
   const [iAddress, setIAddress] = useState();
   const [gInfo, setGInfo] = useState({ uid: "", balance: "", status: "" });
   const [sInfo, setSInfo] = useState({ address: "", status: "", balance: "" });
   const contract = new SrvExchangeToken(
     "http://127.0.0.1:7545",
-    "0x4090cdc08D04A36D0ae868FcDdAeFE08427890F1",
+    "0xe5324B925245b9c74e14FCD700De373636447529",
     SrvExchange
   );
   const [serviceInfo, setServiceInfo] = useState({
@@ -41,9 +41,7 @@ const Supervisor = () => {
   });
 
   const getService = async () => {
-    const response = await Axios.get(
-      "http://localhost:80/TB/api/v1.0/getService"
-    );
+    const response = await axiosFlask.get("/TB/api/v1.0/getService");
     setServiceInfo({
       dealer_uid: response.data.data.dealer.uid,
       dealer_balance: response.data.data.dealer.balance,
@@ -54,6 +52,15 @@ const Supervisor = () => {
       recipient_serviceinfo: response.data.data.recipient.serviceinfo,
       recipient_status: response.data.data.recipient.status,
     });
+  };
+
+  const setUserBalance = (userAddress, userBalance) => {
+    axiosNode
+      .post("/setUserBalance", {
+        address: userAddress,
+        balance: userBalance,
+      })
+      .then((response) => console.log(response.data));
   };
 
   useEffect(() => {
@@ -67,7 +74,7 @@ const Supervisor = () => {
           <Nav.Link>
             <Button
               onClick={() => {
-                Axios.get("http://localhost:3001/logout").then((response) => {
+                axiosNode.get("/logout").then((response) => {
                   console.log(response.data);
                   cookie.remove("admin");
                   history.push("/login");
@@ -152,7 +159,17 @@ const Supervisor = () => {
           <Col>
             <Card style={{ width: "26rem" }}>
               <Card.Body>
-                <Form>
+                <Form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    contract.setAccount(
+                      sInfo.address,
+                      sInfo.status,
+                      sInfo.balance
+                    );
+                    setUserBalance(sInfo.address, sInfo.balance);
+                  }}
+                >
                   <Form.Group>
                     <Form.Label>Enter Address</Form.Label>
                     <Form.Control
@@ -180,18 +197,7 @@ const Supervisor = () => {
                       }}
                     ></Form.Control>
                   </Form.Group>
-                  <Button
-                    type="submit"
-                    onClick={() => {
-                      contract.setAccount(
-                        sInfo.address,
-                        sInfo.status,
-                        sInfo.balance
-                      );
-                    }}
-                  >
-                    set account
-                  </Button>
+                  <Button type="submit">set account</Button>
                 </Form>
               </Card.Body>
             </Card>
@@ -212,7 +218,7 @@ const Supervisor = () => {
                 onClick={async () => {
                   const result = await contract.getService();
                   console.log(result);
-                  setTrigger(!trigger)
+                  setTrigger(!trigger);
                 }}
               >
                 get Service

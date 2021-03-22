@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Form, Button, Card, Row, Col } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
-import Axios from "axios";
+import {axiosNode, axiosFlask} from "../helpers/axios";
 
 const Signup = () => {
   const nameRef = useRef();
@@ -12,28 +12,32 @@ const Signup = () => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    Axios.get("http://localhost:3001/user_list", {
-      params: {
-        name: nameRef.current.value,
-      },
-    }).then((response) => {
-      if (
-        response.data === "no user" ||
-        response.data === "no matched user from database"
-      ) {
-        Axios.post("http://localhost:3001/register", {
+    axiosNode
+      .get("/user_list", {
+        params: {
           name: nameRef.current.value,
-          password: passwordRef.current.value,
-          address: addressRef.current.value,
-        }).then((response) => {
+        },
+      })
+      .then((response) => {
+        if (
+          response.data === "no user" ||
+          response.data === "no matched user from database"
+        ) {
+          axiosNode
+            .post("/register", {
+              name: nameRef.current.value,
+              password: passwordRef.current.value,
+              address: addressRef.current.value,
+            })
+            .then((response) => {
+              console.log(response.data);
+              history.push("/login");
+            });
+        } else {
           console.log(response.data);
-          history.push("/login");
-        });
-      } else {
-        console.log(response.data);
-        setLog("user already exist");
-      }
-    });
+          setLog("user already exist");
+        }
+      });
   };
 
   return (

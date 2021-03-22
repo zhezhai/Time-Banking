@@ -2,35 +2,37 @@ import React, { useRef } from "react";
 import { Navbar } from "../components/index";
 import styled from "styled-components";
 import "bootstrap/dist/css/bootstrap.min.css";
-import Axios from "axios";
+import {axiosNode, axiosFlask} from "../helpers/axios";
 import cookie from "react-cookies";
 
 const PostService = () => {
   const serviceInfoRef = useRef();
   const priceRef = useRef();
 
-  Axios.defaults.withCredentials = true;
-
   const postService = () => {
-    Axios.post("http://localhost:3001/createProvider", {
-      provider_service: serviceInfoRef.current.value,
-      provider_price: priceRef.current.value,
-    }).then((response) => {
-      console.log(response);
-    });
+    axiosNode
+      .post("/createProvider", {
+        provider_service: serviceInfoRef.current.value,
+        provider_price: priceRef.current.value,
+      })
+      .then((response) => {
+        console.log(response);
+      });
   };
 
   const updateProvider = () => {
     const user = cookie.load("user");
-    Axios.post("http://localhost:80/TB/api/v1.0/registerService", {
-      client_addr: user.address,
-      op_state: 2,
-      service_info: serviceInfoRef.current.value,
-    }).then((response) => {
-      if (response.data.registerService === "Succeed") {
-        window.alert("service post successful");
-      }
-    });
+    axiosFlask
+      .post("/TB/api/v1.0/registerService", {
+        client_addr: user.address,
+        op_state: 2,
+        service_info: serviceInfoRef.current.value,
+      })
+      .then((response) => {
+        if (response.data.registerService === "Succeed") {
+          window.alert("service post successful");
+        }
+      });
   };
 
   const test = () => {
