@@ -1,24 +1,23 @@
 import React from "react";
 import { Link, useHistory } from "react-router-dom";
 import { Card, Button, ListGroup, Col } from "react-bootstrap";
-import {axiosNode, axiosFlask} from "../helpers/axios";
+import { axiosNode } from "../helpers/axios";
+import Axios from "axios";
 import cookie from "react-cookies";
 
 const Service = ({ provider_info }) => {
   const createRecipient = () => {
     const user = cookie.load("user");
-    axiosNode
-      .post("/createRecipient", {
-        recipient_serviceid: provider_info.id,
-        provider_name: provider_info.provider_name,
-        recipient_name: user.name,
-        recipient_serviceinfo: provider_info.provider_service,
-        recipient_price: provider_info.provider_price,
-        recipient_vid: user.address,
-      })
-      .then((response) => {
-        console.log(response);
-      });
+    Axios.post("http://128.226.88.250:3001/createRecipient", {
+      recipient_serviceid: provider_info.id,
+      provider_name: provider_info.provider_name,
+      recipient_name: user.name,
+      recipient_serviceinfo: provider_info.provider_service,
+      recipient_price: provider_info.provider_price,
+      recipient_vid: user.address,
+    }).then((response) => {
+      console.log(response);
+    });
   };
 
   const updateProviderStatus = () => {

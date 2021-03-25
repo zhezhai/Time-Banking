@@ -58,7 +58,10 @@ const ProviderConfirm = () => {
     confirmHandler();
     setTimeout(() => {
       providerCommit();
-    }, 1000);
+    }, 3000);
+    setTimeout(() => {
+      window.alert("you have confirmed your service");
+    }, 3100);
   };
 
   useEffect(() => {

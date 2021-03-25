@@ -31,6 +31,7 @@ const db = mysql.createConnection({
   host: "localhost",
   password: "123456",
   database: "TimeBanking",
+  port: 3306,
 });
 
 //====================================== api =========================================
@@ -38,14 +39,18 @@ const db = mysql.createConnection({
 //get all users
 app.get("/user_list", (req, res) => {
   db.query("select * from user", (err, result) => {
-    if (result.length == 0) {
+    if (result.length === 0) {
       res.send("no user");
     } else {
       db.query(
         "select * from user where name = ?",
         [req.query.name],
         (err, result) => {
-          res.send(result[0].name);
+          if (result.length === 0) {
+            res.send("no matched user from database");
+          } else {
+            res.send("user already exist");
+          }
         }
       );
     }

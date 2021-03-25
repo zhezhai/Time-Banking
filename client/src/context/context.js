@@ -45,54 +45,6 @@ const TBProvider = ({ children }) => {
       .send({ from: accounts[0] });
   };
 
-  class SrvExchangeToken {
-    constructor(http_provider, contract_addr, contract_config) {
-      this.web3 = new Web3(http_provider);
-      this.contract_address = Web3.utils.toChecksumAddress(contract_addr);
-      this.contract_abi = contract_config.abi;
-      this.contract = new this.web3.eth.Contract(
-        this.contract_abi,
-        this.contract_address
-      );
-    }
-
-    async initAccount(address) {
-      const checksumAddr = Web3.utils.toChecksumAddress(address);
-      const accounts = await this.web3.eth.getAccounts();
-      const supervisor = accounts[0];
-      this.contract.methods
-        .initAccount(checksumAddr)
-        .send({ from: supervisor });
-    }
-
-    async getAccount(address) {
-      const checksumAddr = Web3.utils.toChecksumAddress(address);
-      return this.contract.methods.getAccount(checksumAddr).call();
-    }
-
-    async setAccount(address, status, balance) {
-      const checksumAddr = Web3.utils.toChecksumAddress(address);
-      const accounts = await this.web3.eth.getAccounts();
-      const supervisor = accounts[0];
-      this.contract.methods
-        .setAccount(checksumAddr, status, balance)
-        .send({ from: supervisor });
-    }
-
-    async initService() {
-      const accounts = await this.web3.eth.getAccounts();
-      const supervisor = accounts[0];
-      this.contract.methods
-        .initService()
-        .send({ from: supervisor, gas: 3000000 });
-    }
-
-    async getService() {
-      const result = await this.contract.methods.getService().call();
-      return result;
-    }
-  }
-
   const recipientList = () => {
     Axios.get("http://localhost:3001/showRecipients").then((response) => {
       if (response.data == "empty recipient list") {
@@ -122,7 +74,6 @@ const TBProvider = ({ children }) => {
         recipients,
         setRecipients,
         recipientList,
-        SrvExchangeToken
       }}
     >
       {children}

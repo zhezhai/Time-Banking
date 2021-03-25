@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import { Navbar } from "../components/index";
 import styled from "styled-components";
 import "bootstrap/dist/css/bootstrap.min.css";
-import {axiosNode, axiosFlask} from "../helpers/axios";
+import { axiosNode, axiosFlask } from "../helpers/axios";
 import cookie from "react-cookies";
 
 const PostService = () => {
@@ -33,10 +33,6 @@ const PostService = () => {
           window.alert("service post successful");
         }
       });
-  };
-
-  const test = () => {
-    console.log(cookie.load("user"));
   };
 
   return (
@@ -77,7 +73,6 @@ const PostService = () => {
               post service
             </button>
           </form>
-          <button onClick={test}>test</button>
         </div>
       </Wrapper>
     </div>

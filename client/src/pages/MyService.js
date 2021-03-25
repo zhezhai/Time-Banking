@@ -70,7 +70,7 @@ const MyService = () => {
       .post("/TB/api/v1.0/negotiateService", {
         client_addr: user.address,
         op_state: 1, //recipient deposit time currency
-        time_currency: recipients[0].recipient_price,
+        time_currency: Number(recipients[0].recipient_price),
       })
       .then((response) => {
         console.log(response);
@@ -84,7 +84,7 @@ const MyService = () => {
     }, 500);
     setTimeout(() => {
       window.alert("wait for provider confirm");
-    }, 1000)
+    }, 1000);
   };
 
   useEffect(() => {

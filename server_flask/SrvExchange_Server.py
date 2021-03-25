@@ -18,13 +18,15 @@ from utilities import FileUtil, TypesUtil
 from SrvExchangeToken import SrvExchangeToken
 
 app = Flask(__name__)
-CORS(app,supports_credentials=True)
+
+CORS(app, supports_credentials=True, resources={
+    r"/TB/api/v1.0/*": {"origins": "http://localhost:3000"}})
 
 # global variable
 addr_list = './addr_list.json'
 http_provider = 'http://localhost:7545'
 # contract_addr = SrvExchangeToken.getAddress('SrvExchangeToken', addr_list)
-contract_addr = '0xe5324B925245b9c74e14FCD700De373636447529'
+contract_addr = SrvExchangeToken.getAddress('SrvExchangeToken_test', addr_list)
 contract_config = '/Users/zhezhai/VscodeProjects/BlockChain/Time_Banking/client/src/contracts/SrvExchange.json'
 
 
@@ -95,6 +97,30 @@ def getService():
     return jsonify({'result': 'Succeed', 'data': json_data}), 201
 
 
+@app.route('/TB/api/v1.0/initAccount', methods=['POST'])
+def initAccount():
+    req_data = TypesUtil.bytes_to_string(request.data)
+    json_data = TypesUtil.string_to_json(req_data)
+
+    client_addr = json_data['client_addr']
+    mySrvExchange.initAccount(client_addr)
+    return jsonify({'initAccount': 'Succeed'}), 201
+
+
+@app.route('/TB/api/v1.0/setAccount', methods=['POST'])
+def setAccount():
+    req_data = TypesUtil.bytes_to_string(request.data)
+    json_data = TypesUtil.string_to_json(req_data)
+
+    client_addr = json_data['client_addr']
+    status = json_data['status']
+    balance = json_data['balance']
+
+    mySrvExchange.setAccount(client_addr, status, balance)
+
+    return jsonify({'setAccount': 'Succeed'}), 201
+
+
 @app.route('/TB/api/v1.0/getAccount', methods=['GET'])
 def getAccount():
     # parse data from request.data
@@ -117,6 +143,13 @@ def getAccount():
     json_data['status'] = service_data[2]
 
     return jsonify({'result': 'Succeed', 'data': json_data}), 201
+
+
+@app.route('/TB/api/v1.0/initService', methods=['GET'])
+def initService():
+    mySrvExchange.initService()
+
+    return jsonify({'initService': 'Succeed'}), 201
 
 
 @app.route('/TB/api/v1.0/registerService', methods=['POST'])

@@ -3,7 +3,6 @@ import { axiosNode, axiosFlask } from "../helpers/axios";
 import { useHistory } from "react-router-dom";
 import { TBContext } from "../context/context";
 import cookie from "react-cookies";
-import SrvExchange from "../contracts/SrvExchange.json";
 import {
   Button,
   Card,
@@ -17,18 +16,13 @@ import {
 } from "react-bootstrap";
 
 const Supervisor = () => {
-  const { SrvExchangeToken } = React.useContext(TBContext);
   const history = useHistory();
   const [trigger, setTrigger] = useState(false);
   const [address, setAddress] = useState();
   const [iAddress, setIAddress] = useState();
   const [gInfo, setGInfo] = useState({ uid: "", balance: "", status: "" });
   const [sInfo, setSInfo] = useState({ address: "", status: "", balance: "" });
-  const contract = new SrvExchangeToken(
-    "http://127.0.0.1:7545",
-    "0xe5324B925245b9c74e14FCD700De373636447529",
-    SrvExchange
-  );
+
   const [serviceInfo, setServiceInfo] = useState({
     dealer_uid: "",
     dealer_balance: "",
@@ -52,20 +46,12 @@ const Supervisor = () => {
       recipient_serviceinfo: response.data.data.recipient.serviceinfo,
       recipient_status: response.data.data.recipient.status,
     });
-  };
-
-  const setUserBalance = (userAddress, userBalance) => {
-    axiosNode
-      .post("/setUserBalance", {
-        address: userAddress,
-        balance: userBalance,
-      })
-      .then((response) => console.log(response.data));
+    console.log(response.data);
   };
 
   useEffect(() => {
     getService();
-  }, [trigger]);
+  }, []);
 
   return (
     <>
@@ -107,7 +93,11 @@ const Supervisor = () => {
                   <Button
                     style={{ margin: "1rem" }}
                     onClick={() => {
-                      contract.initAccount(address);
+                      axiosFlask
+                        .post("/TB/api/v1.0/initAccount", {
+                          client_addr: address,
+                        })
+                        .then((response) => console.log(response.data));
                     }}
                   >
                     init account
@@ -132,16 +122,21 @@ const Supervisor = () => {
                     }}
                   />
                   <Button
-                    onClick={async () => {
-                      const result = await contract.getAccount(address);
-                      const json_result = JSON.parse(JSON.stringify(result));
-                      setGInfo({
-                        uid: json_result[0],
-                        balance: json_result[1],
-                        status: json_result[2],
-                      });
-                      console.log(gInfo);
-                      console.log(json_result);
+                    onClick={() => {
+                      axiosFlask
+                        .get("/TB/api/v1.0/getAccount", {
+                          params: {
+                            addr: address,
+                          },
+                        })
+                        .then((response) => {
+                          console.log(response.data);
+                          setGInfo({
+                            uid: response.data.data.uid,
+                            balance: response.data.data.balance,
+                            status: response.data.data.status,
+                          });
+                        });
                     }}
                   >
                     get account
@@ -162,12 +157,15 @@ const Supervisor = () => {
                 <Form
                   onSubmit={(e) => {
                     e.preventDefault();
-                    contract.setAccount(
-                      sInfo.address,
-                      sInfo.status,
-                      sInfo.balance
-                    );
-                    setUserBalance(sInfo.address, sInfo.balance);
+                    axiosFlask
+                      .post("/TB/api/v1.0/setAccount", {
+                        client_addr: sInfo.address,
+                        status: Number(sInfo.status),
+                        balance: Number(sInfo.balance),
+                      })
+                      .then((response) => {
+                        console.log(response.data);
+                      });
                   }}
                 >
                   <Form.Group>
@@ -209,20 +207,16 @@ const Supervisor = () => {
             <Card.Body>
               <Button
                 onClick={() => {
-                  contract.initService();
+                  axiosFlask
+                    .get("/TB/api/v1.0/initService")
+                    .then((response) => {
+                      console.log(response.data);
+                    });
                 }}
               >
                 Init Service
               </Button>
-              <Button
-                onClick={async () => {
-                  const result = await contract.getService();
-                  console.log(result);
-                  setTrigger(!trigger);
-                }}
-              >
-                get Service
-              </Button>
+              <Button onClick={getService}>get Service</Button>
             </Card.Body>
           </Card>
         </Row>

@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { TBContext } from "../context/context";
 import { Button } from "react-bootstrap";
-import Axios from "axios";
+import { axiosNode, axiosFlask } from "../helpers/axios";
 import cookie from "react-cookies";
 import {
   Nav,
@@ -54,7 +54,7 @@ function Navbar() {
         <NavBtn>
           <Button
             onClick={() => {
-              Axios.get("http://localhost:3001/logout").then((response) => {
+              axiosNode.get("/logout").then((response) => {
                 console.log(response.data);
                 cookie.remove("user");
                 cookie.remove("admin");

@@ -94,13 +94,13 @@ const Payment = () => {
     recipientCommit();
     setTimeout(() => {
       payment();
-    }, 400);
+    }, 3000);
     setTimeout(() => {
       updateRecipientStatus();
-    }, 600);
+    }, 3100);
     setTimeout(() => {
       window.alert("payment successfully processed!");
-    }, 800);
+    }, 3200);
   };
 
   useEffect(() => {
