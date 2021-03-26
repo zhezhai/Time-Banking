@@ -1,6 +1,6 @@
 pragma solidity ^0.4.18;
 
-contract SrvExchange {
+contract SrvExchange_3 {
     /*
 		Define struct to represent account of each participant.
 	*/
@@ -41,7 +41,7 @@ contract SrvExchange {
 
     // Global state variables
     address private constant supervisor =
-        0x6A1ed582B736AE088D2f16f9F8b8fa0a915b8165;
+        0x40348d20a68321A7ff9Ce0a6Cb9b266253E59585;
 
     // initialize struct object
     SrvDealer private dealer;

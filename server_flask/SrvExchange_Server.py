@@ -9,10 +9,10 @@ Created on August.11, 2020
 '''
 
 import time
+import json
 from flask import Flask, jsonify
 from flask import abort, make_response, request
 from flask_cors import CORS
-
 
 from utilities import FileUtil, TypesUtil
 from SrvExchangeToken import SrvExchangeToken
@@ -23,18 +23,20 @@ CORS(app, supports_credentials=True, resources={
     r"/TB/api/v1.0/*": {"origins": "http://localhost:3000"}})
 
 # global variable
-addr_list = './addr_list.json'
 http_provider = 'http://localhost:7545'
-# contract_addr = SrvExchangeToken.getAddress('SrvExchangeToken', addr_list)
-contract_addr = SrvExchangeToken.getAddress('SrvExchangeToken_test', addr_list)
-contract_config = '/Users/zhezhai/VscodeProjects/BlockChain/Time_Banking/client/src/contracts/SrvExchange.json'
+contract_addr_list = json.load(open('contract_addr_list.json'))
+contract_config = '/Users/zhezhai/VscodeProjects/BlockChain/Time_Banking/client/src/contracts/{}.json'
 
+mySrvExchange = dict()
 
 # new SrvExchangeToken object
-mySrvExchange = SrvExchangeToken(http_provider, contract_addr, contract_config)
+for key, value in contract_addr_list.items():
+    mySrvExchange[value] = SrvExchangeToken(
+        http_provider, value, contract_config.format(key))
+    # mySrvExchange = SrvExchangeToken(http_provider, contract_addr, contract_config)
 
-# ========================================== Error handler ===============================================
-# Error handler for abort(404)
+    # ========================================== Error handler ===============================================
+    # Error handler for abort(404)
 
 
 @app.errorhandler(404)

@@ -226,7 +226,8 @@ if __name__ == "__main__":
     addr_list = './addr_list.json'
 
     http_provider = 'http://localhost:7545'
-    contract_addr = SrvExchangeToken.getAddress('SrvExchangeToken', addr_list)
+    contract_addr = SrvExchangeToken.getAddress(
+        'SrvExchangeToken_test', addr_list)
     contract_config = '/Users/zhezhai/VscodeProjects/BlockChain/Time_Banking/client/src/contracts/SrvExchange.json'
 
     # new SrvExchangeToken object

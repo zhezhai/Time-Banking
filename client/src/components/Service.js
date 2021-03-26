@@ -8,7 +8,7 @@ import cookie from "react-cookies";
 const Service = ({ provider_info }) => {
   const createRecipient = () => {
     const user = cookie.load("user");
-    Axios.post("http://128.226.88.250:3001/createRecipient", {
+    Axios.post("http://localhost:3001/createRecipient", {
       recipient_serviceid: provider_info.id,
       provider_name: provider_info.provider_name,
       recipient_name: user.name,

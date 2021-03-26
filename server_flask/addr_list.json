@@ -22,8 +22,9 @@
 	"IndexToken": "0x7329747773c78bc6236551ee4318a91bf77d9e36",
 	"HashModelToken": "0x761b8a58ec194f9c4d1630ab98da0420a50d30a0",
 	"CapACToken": "0x5446e90db8f1e5eceb01e618ebf48fa5ace7abde",
+
 	"SrvExchangeToken": "0xe5324B925245b9c74e14FCD700De373636447529",
-	"SrvExchangeToken_test":"0xe5324B925245b9c74e14FCD700De373636447529",
+
 	"zzhai_account1": "0xf61A109AF8d060aE1631c0848dC96826D0Ff0128",
 	"zzhai_account2": "0x40c74E45785ab21891c55D189b34c5788943FFC0",
 	"docker_miner1": "0x686ab8ac2e56ba452d025a4447a714998763c1c3",
