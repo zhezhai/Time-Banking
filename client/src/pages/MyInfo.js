@@ -2,21 +2,22 @@ import React, { useState, useEffect } from "react";
 import { Navbar } from "../components";
 import { Container, Card, ListGroup } from "react-bootstrap";
 import cookie from "react-cookies";
-import { axiosNode, axiosFlask } from "../helpers/axios";
-import axios from "axios";
+import { axiosNode } from "../helpers/axios";
 
 const MyInfo = () => {
   const user = cookie.load("user");
-  const [userInfo, setUserInfo] = useState({});
+  const [userInfo, setUserInfo] = useState([]);
+
   const showInfo = () => {
-    axiosFlask
-      .get("/TB/api/v1.0/getAccount", {
+    axiosNode
+      .get("/getUser", {
         params: {
-          addr: user.address,
+          username: user.name,
         },
       })
       .then((response) => {
-        setUserInfo(response.data.data);
+        console.log(response.data.result[0]);
+        setUserInfo(response.data.result[0]);
       });
   };
 
@@ -32,8 +33,8 @@ const MyInfo = () => {
           <Card.Title>My Information</Card.Title>
           <Card.Body>
             <ListGroup>
-              <ListGroup.Item>name: {user.name}</ListGroup.Item>
-              <ListGroup.Item>my address: {user.address}</ListGroup.Item>
+              <ListGroup.Item>name: {userInfo.name}</ListGroup.Item>
+              <ListGroup.Item>my address: {userInfo.address}</ListGroup.Item>
               <ListGroup.Item>balance: {userInfo.balance}</ListGroup.Item>
             </ListGroup>
           </Card.Body>

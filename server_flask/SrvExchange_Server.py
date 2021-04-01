@@ -24,7 +24,7 @@ CORS(app, supports_credentials=True, resources={
 
 # global variable
 http_provider = 'http://localhost:7545'
-contract_addr_list = json.load(open('contract_addr_list.json'))
+contract_addr_list = json.load(open('./data/contract_addr_list.json'))
 contract_config = '/Users/zhezhai/VscodeProjects/BlockChain/Time_Banking/client/src/contracts/{}.json'
 
 mySrvExchange = dict()
@@ -75,7 +75,8 @@ def access_deny(error):
 def getService():
 
     start_time = time.time()
-    service_data = mySrvExchange.getService()
+    contract_addr = request.args.get('contract_addr')
+    service_data = mySrvExchange[contract_addr].getService()
     exec_time = time.time()-start_time
     FileUtil.save_testlog(
         'test_results', 'exec_getService.log', format(exec_time*1000, '.3f'))
@@ -104,8 +105,10 @@ def initAccount():
     req_data = TypesUtil.bytes_to_string(request.data)
     json_data = TypesUtil.string_to_json(req_data)
 
+    contract_addr = json_data['contract_addr']
     client_addr = json_data['client_addr']
-    mySrvExchange.initAccount(client_addr)
+
+    mySrvExchange[contract_addr].initAccount(client_addr)
     return jsonify({'initAccount': 'Succeed'}), 201
 
 
@@ -114,11 +117,12 @@ def setAccount():
     req_data = TypesUtil.bytes_to_string(request.data)
     json_data = TypesUtil.string_to_json(req_data)
 
+    contract_addr = json_data['contract_addr']
     client_addr = json_data['client_addr']
     status = json_data['status']
     balance = json_data['balance']
 
-    mySrvExchange.setAccount(client_addr, status, balance)
+    mySrvExchange[contract_addr].setAccount(client_addr, status, balance)
 
     return jsonify({'setAccount': 'Succeed'}), 201
 
@@ -129,10 +133,11 @@ def getAccount():
     # req_data = TypesUtil.bytes_to_string(request.data)
     # json_data = TypesUtil.string_to_json(req_data)
 
+    contract_addr = request.args.get('contract_addr')
     client_addr = request.args.get('addr')
 
     start_time = time.time()
-    service_data = mySrvExchange.getAccount(client_addr)
+    service_data = mySrvExchange[contract_addr].getAccount(client_addr)
     exec_time = time.time()-start_time
     FileUtil.save_testlog(
         'test_results', 'exec_getAccount.log', format(exec_time*1000, '.3f'))
@@ -149,7 +154,9 @@ def getAccount():
 
 @app.route('/TB/api/v1.0/initService', methods=['GET'])
 def initService():
-    mySrvExchange.initService()
+    contract_addr = request.args.get('contract_addr')
+
+    mySrvExchange[contract_addr].initService()
 
     return jsonify({'initService': 'Succeed'}), 201
 
@@ -160,14 +167,15 @@ def registerService():
     req_data = TypesUtil.bytes_to_string(request.data)
     json_data = TypesUtil.string_to_json(req_data)
 
+    contract_addr = json_data['contract_addr']
     client_addr = json_data['client_addr']
     op_state = json_data['op_state']
     service_info = json_data['service_info']
 
     if(op_state == 1):
-        mySrvExchange.updateRecipient(client_addr, service_info)
+        mySrvExchange[contract_addr].updateRecipient(client_addr, service_info)
     else:
-        mySrvExchange.updateProvider(client_addr, service_info)
+        mySrvExchange[contract_addr].updateProvider(client_addr, service_info)
 
     return jsonify({'registerService': 'Succeed'}), 201
 
@@ -178,16 +186,18 @@ def negotiateService():
     req_data = TypesUtil.bytes_to_string(request.data)
     json_data = TypesUtil.string_to_json(req_data)
 
+    contract_addr = json_data['contract_addr']
     client_addr = json_data['client_addr']
     op_state = json_data['op_state']
     time_currency = json_data['time_currency']
 
     if(op_state == 2):
-        mySrvExchange.recipient_withdraw(client_addr)
+        mySrvExchange[contract_addr].recipient_withdraw(client_addr)
     elif(op_state == 1):
-        mySrvExchange.recipient_deposit(client_addr, time_currency)
+        mySrvExchange[contract_addr].recipient_deposit(
+            client_addr, time_currency)
     else:
-        mySrvExchange.provider_confirm(client_addr)
+        mySrvExchange[contract_addr].provider_confirm(client_addr)
 
     return jsonify({'negotiateService': 'Succeed'}), 201
 
@@ -198,9 +208,10 @@ def commitService():
     req_data = TypesUtil.bytes_to_string(request.data)
     json_data = TypesUtil.string_to_json(req_data)
 
+    contract_addr = json_data['contract_addr']
     client_addr = json_data['client_addr']
 
-    mySrvExchange.service_commit(client_addr)
+    mySrvExchange[contract_addr].service_commit(client_addr)
 
     return jsonify({'commitService': 'Succeed'}), 201
 
@@ -211,9 +222,10 @@ def paymentService():
     req_data = TypesUtil.bytes_to_string(request.data)
     json_data = TypesUtil.string_to_json(req_data)
 
+    contract_addr = json_data['contract_addr']
     client_addr = json_data['client_addr']
 
-    mySrvExchange.service_payment(client_addr)
+    mySrvExchange[contract_addr].service_payment(client_addr)
 
     return jsonify({'paymentService': 'Succeed'}), 201
 

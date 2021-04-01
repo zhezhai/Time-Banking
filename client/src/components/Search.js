@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { MdSearch } from "react-icons/md";
-import { TBContext } from "../context/context";
 
 const Search = () => {
   const [serviceName, setServiceName] = useState("");

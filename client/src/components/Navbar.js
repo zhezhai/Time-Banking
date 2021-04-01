@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { TBContext } from "../context/context";
 import { Button } from "react-bootstrap";
-import { axiosNode, axiosFlask } from "../helpers/axios";
+import { axiosNode } from "../helpers/axios";
 import cookie from "react-cookies";
 import {
   Nav,
@@ -43,8 +43,6 @@ function Navbar() {
           <NavLink to="/post_service">PostService</NavLink>
           <NavLink to="/payment">Payment</NavLink>
           <NavLink to="/provider_confirm">ProviderConfirm</NavLink>
-          {/* Second Nav */}
-          {/* <NavBtnLink to='/sign-in'>Sign In</NavBtnLink> */}
         </NavMenu>
         {!isLoggedIn && (
           <NavBtn>
@@ -66,24 +64,6 @@ function Navbar() {
           </Button>
         </NavBtn>
       </Nav>
-      {/* {!isLoggedIn && (
-              <Link to="/login" className="btn btn-primary">
-                login
-              </Link>
-            )}
-            <button
-              className="btn btn-primary"
-              onClick={() => {
-                Axios.get("http://localhost:3001/logout").then((response) => {
-                  console.log(response.data);
-                  cookie.remove("user");
-                  cookie.remove("admin");
-                  setIsLoggedIn(false);
-                });
-              }}
-            >
-              logout
-            </button> */}
     </>
   );
 }

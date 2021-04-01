@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { axiosNode, axiosFlask } from "../helpers/axios";
 import { useHistory } from "react-router-dom";
-import { TBContext } from "../context/context";
 import cookie from "react-cookies";
 import {
   Button,
@@ -17,7 +16,6 @@ import {
 
 const Supervisor = () => {
   const history = useHistory();
-  const [trigger, setTrigger] = useState(false);
   const [address, setAddress] = useState();
   const [iAddress, setIAddress] = useState();
   const [gInfo, setGInfo] = useState({ uid: "", balance: "", status: "" });

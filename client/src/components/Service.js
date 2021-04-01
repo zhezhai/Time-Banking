@@ -1,70 +1,144 @@
 import React from "react";
-import { Link, useHistory } from "react-router-dom";
 import { Card, Button, ListGroup, Col } from "react-bootstrap";
-import { axiosNode } from "../helpers/axios";
-import Axios from "axios";
+import { axiosFlask, axiosNode } from "../helpers/axios";
 import cookie from "react-cookies";
 
-const Service = ({ provider_info }) => {
-  const createRecipient = () => {
-    const user = cookie.load("user");
-    Axios.post("http://localhost:3001/createRecipient", {
-      recipient_serviceid: provider_info.id,
-      provider_name: provider_info.provider_name,
-      recipient_name: user.name,
-      recipient_serviceinfo: provider_info.provider_service,
-      recipient_price: provider_info.provider_price,
-      recipient_vid: user.address,
-    }).then((response) => {
-      console.log(response);
-    });
-  };
+const Service = ({ service }) => {
+  const user = cookie.load("user");
 
-  const updateProviderStatus = () => {
+  const insertProvider = () => {
     axiosNode
-      .post("/alterProvider", {
-        provider_status: 1,
-        provider_id: provider_info.id,
+      .post("/updateProvider", {
+        provider_name: user.name,
+        provider_vid: user.address,
+        id: service.id,
       })
       .then((response) => {
-        console.log(response);
+        console.log(response.data);
       });
   };
 
-  const call = () => {
-    createRecipient();
-    updateProviderStatus();
+  const insertRecipient = () => {
+    axiosNode
+      .post("/updateRecipient", {
+        recipient_name: user.name,
+        recipient_vid: user.address,
+        id: service.id,
+      })
+      .then((response) => {
+        console.log(response.data);
+      });
   };
 
-  return (
-    <Col>
-      <Card style={{ width: "30rem" }}>
-        <Card.Body>
-          <ListGroup>
-            <ListGroup.Item>
-              provider_name: {provider_info.provider_name}
-            </ListGroup.Item>
-            <ListGroup.Item>
-              service_info: {provider_info.provider_service}
-            </ListGroup.Item>
-            <ListGroup.Item>
-              price: {provider_info.provider_price}
-            </ListGroup.Item>
-          </ListGroup>
-          <Link
-            to={{
-              pathname: "/myservice",
-              state: {
-                service_id: provider_info.id,
-              },
-            }}
-          >
-            <Button onClick={call}>add to MyService</Button>
-          </Link>
-        </Card.Body>
-      </Card>
-    </Col>
-  );
+  const providerStatusUpdate = () => {
+    axiosNode
+      .post("/updateProviderStatus", {
+        provider_status: 1,
+        id: service.id,
+      })
+      .then((response) => {
+        console.log(response.data);
+      });
+  };
+
+  const recipientStatusUpdate = () => {
+    axiosNode
+      .post("/updateRecipientStatus", {
+        recipient_status: 1,
+        id: service.id,
+      })
+      .then((response) => {
+        console.log(response.data);
+      });
+  };
+
+  const providerRegister = () => {
+    axiosFlask
+      .post("/registerService", {
+        contract_addr: service.contract_address,
+        client_addr: user.address,
+        op_state: 2,
+        service_info: service.service_info,
+      })
+      .then((response) => {
+        console.log(response.data);
+      });
+  };
+
+  const recipientRegister = () => {
+    axiosFlask
+      .post("/registerService", {
+        contract_addr: service.contract_address,
+        client_addr: user.address,
+        op_state: 1,
+        service_info: service.service_info,
+      })
+      .then((response) => {
+        console.log(response.data);
+      });
+  };
+
+  const recipientCall = () => {
+    insertProvider();
+    recipientStatusUpdate();
+    providerStatusUpdate();
+    setTimeout(() => {
+      providerRegister();
+    }, 500);
+  };
+  const providerCall = () => {
+    insertRecipient();
+    recipientStatusUpdate();
+    providerStatusUpdate();
+    setTimeout(() => {
+      recipientRegister();
+    }, 500);
+  };
+
+  if (service.post_type === "provider" && service.provider_status === 0) {
+    return (
+      <Col>
+        <Card style={{ width: "30rem" }}>
+          <Card.Body>
+            <ListGroup>
+              <ListGroup.Item>
+                provider_name: {service.provider_name}
+              </ListGroup.Item>
+              <ListGroup.Item>
+                service_info: {service.service_info}
+              </ListGroup.Item>
+              <ListGroup.Item>price: {service.price}</ListGroup.Item>
+            </ListGroup>
+            <Button onClick={providerCall}>buy service</Button>
+          </Card.Body>
+        </Card>
+      </Col>
+    );
+  } else if (
+    service.post_type === "recipient" &&
+    service.provider_status === 0
+  ) {
+    return (
+      <Col>
+        <Card style={{ width: "30rem" }}>
+          <Card.Body>
+            <ListGroup>
+              <ListGroup.Item>
+                recipient_name: {service.recipient_name}
+              </ListGroup.Item>
+              <ListGroup.Item>
+                service_info: {service.service_info}
+              </ListGroup.Item>
+              <ListGroup.Item>price: {service.price}</ListGroup.Item>
+            </ListGroup>
+            <Button onClick={recipientCall}>provide service</Button>
+          </Card.Body>
+        </Card>
+      </Col>
+    );
+  } else {
+    return <></>;
+  }
 };
 
 export default Service;

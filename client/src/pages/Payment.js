@@ -7,105 +7,117 @@ import { Container, ListGroup, Card } from "react-bootstrap";
 
 const Payment = () => {
   const user = cookie.load("user");
-  const [userInfo, setUserInfo] = useState({});
-  const [recipients, setRecipients] = useState([]);
+  const [services, setServices] = useState([]);
 
-  const showInfo = () => {
-    axiosNode.get("/login").then((response) => {
-      console.log(response.data.user[0]);
-      setUserInfo(response.data.user[0]);
-    });
-  };
-
-  const recipientList = () => {
-    axiosNode.get("/showRecipients").then((response) => {
-      if (response.data == "empty recipient list") {
-        console.log("there is no data");
-        setRecipients([
-          {
-            provider_name: "empty",
-            recipient_service: "empty",
-            recipient_price: "empty",
-          },
-        ]);
-      } else {
-        const results = response.data;
-        const filtered_result = results.filter(
-          (result) => result.recipient_status === 0
+  const paymentList = () => {
+    axiosNode.get("/getServices").then((response) => {
+      const results = response.data.result;
+      const filtered_results = results.filter((result) => {
+        return (
+          result.recipient_name === user.name && result.recipient_status === 2
         );
-        if (filtered_result.length === 0) {
-          console.log("there is no data");
-          setRecipients([
-            {
-              provider_name: "empty",
-              recipient_service: "empty",
-              recipient_price: "empty",
-            },
-          ]);
-        } else {
-          if (user.name !== filtered_result[0].recipient_name) {
-            setRecipients([
-              {
-                provider_name: "empty",
-                recipient_service: "empty",
-                recipient_price: "empty",
-              },
-            ]);
-          } else {
-            setRecipients(filtered_result);
-          }
-        }
-      }
+      });
+      setServices(filtered_results);
     });
   };
 
-  const recipientCommit = () => {
+  const recipientCommit = (service) => {
     axiosFlask
-      .post("/TB/api/v1.0/commitService", {
-        client_addr: recipients[0].recipient_vid,
+      .post("/commitService", {
+        contract_addr: service.contract_address,
+        client_addr: service.recipient_vid,
       })
       .then((response) => {
         console.log(response.data);
       });
   };
 
-  const payment = () => {
+  const payment = (service) => {
     axiosFlask
-      .post("/TB/api/v1.0/paymentService", {
-        client_addr: recipients[0].recipient_vid,
+      .post("/paymentService", {
+        contract_addr: service.contract_address,
+        client_addr: service.recipient_vid,
       })
       .then((response) => {
-        console.log(response.data);
+        if (response.data.paymentService === "Succeed") {
+          axiosNode
+            .post("/alterContract", {
+              status: 0,
+              contract_addr: service.contract_address,
+            })
+            .then((response) => {
+              console.log(response.data.message);
+            });
+        }
       });
   };
 
-  const updateRecipientStatus = () => {
+  const recipientStatusUpdate = (service) => {
     axiosNode
-      .post("/alterRecipient", {
-        recipient_status: 1,
-        recipient_id: recipients[0].id,
+      .post("/updateRecipientStatus", {
+        recipient_status: 3,
+        id: service.id,
       })
       .then((response) => {
-        console.log(response);
+        console.log(response.data);
       });
   };
 
-  const call = () => {
-    recipientCommit();
+  const setUserBalance = (service) => {
+    axiosNode
+      .get("/getUser", {
+        params: {
+          username: service.provider_name,
+        },
+      })
+      .then((response) => {
+        const result = response.data.result;
+        axiosNode
+          .post("/setUserBalance", {
+            address: service.provider_vid,
+            balance: result[0].balance + service.price,
+          })
+          .then((response) => {
+            console.log(response);
+          });
+      });
+    axiosNode
+      .get("/getUser", {
+        params: {
+          username: service.recipient_name,
+        },
+      })
+      .then((response) => {
+        const result = response.data.result;
+        axiosNode
+          .post("/setUserBalance", {
+            address: service.recipient_vid,
+            balance: result[0].balance - service.price,
+          })
+          .then((response) => {
+            console.log(response);
+          });
+      });
+  };
+
+  const paymentCall = (service) => {
+    recipientCommit(service);
     setTimeout(() => {
-      payment();
+      payment(service);
     }, 3000);
     setTimeout(() => {
-      updateRecipientStatus();
+      recipientStatusUpdate(service);
     }, 3100);
     setTimeout(() => {
-      window.alert("payment successfully processed!");
+      setUserBalance(service);
     }, 3200);
+    setTimeout(() => {
+      window.alert("payment successfully processed!");
+    }, 3300);
   };
 
   useEffect(() => {
-    recipientList();
-    showInfo();
+    paymentList();
   }, []);
 
   return (
@@ -113,23 +125,30 @@ const Payment = () => {
       <Navbar />
 
       <Container className="d-flex align-items-center justify-content-center">
-        {recipients.map((recipient, index) => {
+        {services.map((service, index) => {
           return (
             <Card key={index}>
               <Card.Title>payment</Card.Title>
               <Card.Body>
                 <ListGroup>
+                  <ListGroup.Item>name: {service.provider_name}</ListGroup.Item>
                   <ListGroup.Item>
-                    name: {recipient.provider_name}
+                    service: {service.service_info}
                   </ListGroup.Item>
-                  <ListGroup.Item>
-                    service: {recipient.recipient_service}
-                  </ListGroup.Item>
-                  <ListGroup.Item>
-                    price: {recipient.recipient_price}
-                  </ListGroup.Item>
+                  <ListGroup.Item>price: {service.price}</ListGroup.Item>
+                  {service.provider_status === 2 ? (
+                    <ListGroup.Item>provider confirmed</ListGroup.Item>
+                  ) : (
+                    <ListGroup.Item>provider not confirmed</ListGroup.Item>
+                  )}
                 </ListGroup>
-                <Button onClick={call}>pay</Button>
+                <Button
+                  onClick={() => {
+                    paymentCall(service);
+                  }}
+                >
+                  pay
+                </Button>
               </Card.Body>
             </Card>
           );

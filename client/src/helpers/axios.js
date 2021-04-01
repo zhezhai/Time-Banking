@@ -5,7 +5,7 @@ const axiosNode = Axios.create({
 });
 
 const axiosFlask = Axios.create({
-  baseURL: "http://localhost:80",
+  baseURL: "http://localhost:80/TB/api/v1.0",
 });
 
 axiosNode.defaults.withCredentials = true;

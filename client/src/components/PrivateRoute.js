@@ -1,7 +1,6 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
 import cookie from "react-cookies";
-import { TBContext } from "../context/context";
 
 const PrivateRoute = ({ children, ...rest }) => {
   const status = cookie.load("user");

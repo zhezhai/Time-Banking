@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Form, Button, Card, Row, Col } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
-import {axiosNode, axiosFlask} from "../helpers/axios";
+import { axiosNode } from "../helpers/axios";
 
 const Signup = () => {
   const nameRef = useRef();

@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Navbar, Search, ServiceList } from "../components";
 import styled from "styled-components";
 import { TBContext } from "../context/context";
-import {axiosNode, axiosFlask} from "../helpers/axios";
+import { axiosNode } from "../helpers/axios";
 
 const Dashboard = () => {
   const { setIsLoggedIn } = React.useContext(TBContext);

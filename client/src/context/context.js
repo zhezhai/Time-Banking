@@ -10,21 +10,6 @@ const TBProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [recipients, setRecipients] = useState();
 
-  // search the specific service
-  // const searchTBService = (serviceName) => {
-  //   if (serviceName) {
-  //     const result = menu.filter(
-  //       (item) =>
-  //         item.category.includes(serviceName) ||
-  //         item.title.includes(serviceName)
-  //     );
-  //     setService(result);
-  //     console.log(result);
-  //   } else {
-  //     setService(menu);
-  //   }
-  // };
-
   // load browser web3
   const ethEnabled = () => {
     if (window.ethereum) {
