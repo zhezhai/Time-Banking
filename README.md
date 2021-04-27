@@ -53,11 +53,11 @@ The front-end to create the user interface, designed using react and web3.js
 
 ### operation instruction
 * You can use IP address: 128.226.88.250:3000 to visit the website, you should see the login page once you visited.
-* I have already registered four accounts that are already to use:
-	--- name: account1 password:123
-	--- name: account2 password:123
-	--- name: account3 password:123
-	--- name: account4 password:123
+* I have already registered four accounts that are already to use:  
+	--- name: account1 password:123  
+	--- name: account2 password:123  
+	--- name: account3 password:123  
+	--- name: account4 password:123  
   the initial account balance is 500 for each account, so the service price can't be greater than 500.	
 * You can choose any account from account list to login, once you are logged in, you can post a service given service name, price, the role you are going to be in service(provider or recipient) and one aviliable contract address to complete the service registration. successfully posted service will be displayed on dashboard page.
 * Then you can sign out the current account and log in to another account to take the service. If the service is posted by provider, you can click "but service" button to participant in the service, then the service will be added to MyService page, if the service is posted by recipient, you can click "provide service" to become the provider and wait for the service recipient for further operation.
